@@ -4,7 +4,7 @@
 SET NAMES utf8mb4;
 
 -- 1. HTML Header & Enhanced CSS
-SELECT '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>MySQL Health Report</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f7;margin:0;padding:40px;color:#1d1d1f;}h1{font-size:32px;font-weight:600;}h2{font-size:22px;margin:0;cursor:pointer;display:inline-block;}.sub-title{font-size:16px;font-weight:600;color:#424245;margin:25px 0 10px 0;display:flex;align-items:center;}.sub-title::before{content:"";width:4px;height:16px;background:#0071e3;margin-right:8px;border-radius:2px;}.card{background:#ffffff;border-radius:16px;padding:25px;margin-bottom:30px;box-shadow:0 8px 24px rgba(0,0,0,0.06);}table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:15px;}th{padding:10px;text-align:left;border-bottom:1px solid #e5e5e7;background:#fafafa;}td{padding:8px;border-bottom:1px solid #e5e5e7;color:#6e6e73;}tr:hover{background:#fbfbfd;}.directory-grid{display:flex;flex-wrap:wrap;gap:20px;margin-top:15px;}.dir-group{border:1px solid #f0f0f2;padding:15px;border-radius:12px;background:#fbfbfd;min-width:220px;}.dir-group-label{font-size:11px;font-weight:bold;color:#0071e3;text-transform:uppercase;display:block;margin-bottom:8px;}.directory a{display:block;padding:3px 0;color:#1d1d1f;text-decoration:none;font-size:13px;}.directory a:hover{text-decoration:underline;color:#0071e3;}.meta{color:#86868b;font-size:14px;}
+SELECT '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>MySQL Health Report</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f7;margin:0;padding:40px;color:#1d1d1f;}h1{font-size:32px;font-weight:600;}h2{font-size:22px;margin:0;cursor:pointer;display:inline-block;}.sub-title{font-size:16px;font-weight:600;color:#424245;margin:25px 0 10px 0;display:flex;align-items:center;}.sub-title::before{content:"";width:4px;height:16px;background:#0071e3;margin-right:8px;border-radius:2px;}.card{background:#ffffff;border-radius:16px;padding:25px;margin-bottom:30px;box-shadow:0 8px 24px rgba(0,0,0,0.06);}table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:15px;}.query-sql{background:#f6f8fa;border:1px solid #e5e5e7;border-radius:10px;color:#424245;font-family:SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:12px;line-height:1.45;margin:0 0 12px 0;padding:12px;white-space:pre-wrap;}th{padding:10px;text-align:left;border-bottom:1px solid #e5e5e7;background:#fafafa;}td{padding:8px;border-bottom:1px solid #e5e5e7;color:#6e6e73;}tr:hover{background:#fbfbfd;}.directory-grid{display:flex;flex-wrap:wrap;gap:20px;margin-top:15px;}.dir-group{border:1px solid #f0f0f2;padding:15px;border-radius:12px;background:#fbfbfd;min-width:220px;}.dir-group-label{font-size:11px;font-weight:bold;color:#0071e3;text-transform:uppercase;display:block;margin-bottom:8px;}.directory a{display:block;padding:3px 0;color:#1d1d1f;text-decoration:none;font-size:13px;}.directory a:hover{text-decoration:underline;color:#0071e3;}.meta{color:#86868b;font-size:14px;}
 /* Collapsible Styling */
 details summary{outline:none;list-style:none;border-bottom:2px solid #0071e3;padding-bottom:5px;margin-bottom:15px;}
 details summary::-webkit-details-marker{display:none;}
@@ -16,20 +16,172 @@ details[open] summary{margin-bottom:20px;}
 SELECT CONCAT('<div class="card"><h1>MySQL Health Report</h1><div class="meta">Generated: ',DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),'</div><div class="meta">Version: v1.0.0 | Author: Rongping</div></div>');
 
 -- 3. Categorized Directory (Now with Main Section Links)
-SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#sec_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 File IO Type</a><a href="#h_2">1.2 File IO Overview</a></div><div class="dir-group"><a href="#sec_sys" class="dir-group-label">II. Instance Health</a><a href="#s_1">2.1 Basic Health</a><a href="#s_2">2.2 Thread Stats</a></div><div class="dir-group"><a href="#sec_storage" class="dir-group-label">III. Storage & Objects</a><a href="#st_1">3.1 DB Capacity</a><a href="#st_2">3.2 Routines</a></div><div class="dir-group"><a href="#sec_tables" class="dir-group-label">IV. DB Tables Info</a><a href="#t_1">4.1 DB Info</a><a href="#t_2">4.2 Table Numbers</a><a href="#t_3">4.3 Top 20 Largest</a><a href="#t_4">4.4 Engines</a><a href="#t_5">4.5 Auto Inc</a><a href="#t_6">4.6 Full Scans</a><a href="#t_7">4.7 Table Stats</a></div></div></div>';
+SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_system" class="dir-group-label">II. Instance Health</a><a href="#health_info">2.1 Basic Health</a></div><div class="dir-group"><a href="#section_storage" class="dir-group-label">III. Storage & Objects</a><a href="#db_info">3.1 DB Capacity</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">IV. DB Tables Info</a><a href="#t_3">4.3 Top 20 Largest</a><a href="#t_5">4.5 Auto Inc</a><a href="#t_6">4.6 Full Scans</a><a href="#t_7">4.7 Table Stats</a></div></div></div>';
 
 
 -- 4. Main Section: Host Summary (Collapsible)
-SELECT '<div class="card"><details open id="section_host"><summary><h2 id="main_host">1. Performance: Host Summary</h2></summary>';
-    SELECT '<div id="host_io_type" class="sub-title">1.1 Host Summary by File IO Type</div><table><tr><th>Host</th><th>Event</th><th>Total</th><th>Latency</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',host,'</td><td>',event_name,'</td><td>',total,'</td><td>',total_latency,'</td></tr>') FROM sys.x$host_summary_by_file_io_type UNION ALL
-    SELECT '</table>';
-    SELECT '<div id="host_io_summary" class="sub-title">1.2 Host Summary by File IO</div><table><tr><th>Host</th><th>IOs</th><th>Latency</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',host,'</td><td>',ios,'</td><td>',io_latency,'</td></tr>') FROM sys.x$host_summary_by_file_io UNION ALL
-    SELECT '</table>';
-    SELECT '<div id="host_stmt_type" class="sub-title">1.3 Host Summary by Statement Type</div><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Latency</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',host,'</td><td>',statement,'</td><td>',total,'</td><td>',total_latency,'</td></tr>') FROM sys.x$host_summary_by_statement_type UNION ALL
-    SELECT '</table>';
+SELECT '<div class="card"><details open id="section_host"><summary><h2 id="main_host">1. Host Summary</h2></summary>';
+
+-- 1.1 Host Summary Overview (sys.x$host_summary)
+SELECT * FROM (
+    SELECT '<div id="h_1" class="sub-title">1.1 Host Summary Overview</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary` ORDER BY x$host_summary.statement_latency DESC</pre><table><tr><th>Host</th><th>Statements</th><th>Statement Latency</th><th>Statement Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Connections</th><th>Total Connections</th><th>Unique Users</th><th>Current Memory</th><th>Total Memory Allocated</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(host,''),
+        '</td><td>',FORMAT(statements,0),
+        '</td><td>',sys.format_time(statement_latency),
+        '</td><td>',sys.format_time(statement_avg_latency),
+        '</td><td>',FORMAT(table_scans,0),
+        '</td><td>',FORMAT(file_ios,0),
+        '</td><td>',sys.format_time(file_io_latency),
+        '</td><td>',FORMAT(current_connections,0),
+        '</td><td>',FORMAT(total_connections,0),
+        '</td><td>',FORMAT(unique_users,0),
+        '</td><td>',sys.format_bytes(current_memory),
+        '</td><td>',sys.format_bytes(total_memory_allocated),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary
+        ORDER BY statement_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.2 Host Summary by File IO (sys.x$host_summary_by_file_io)
+SELECT * FROM (
+    SELECT '<div id="h_2" class="sub-title">1.2 Host Summary by File IO</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_file_io` ORDER BY x$host_summary_by_file_io.io_latency DESC</pre><table><tr><th>Host</th><th>IOs</th><th>IO Latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(host,''),
+        '</td><td>',FORMAT(ios,0),
+        '</td><td>',sys.format_time(io_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_file_io
+        ORDER BY io_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.3 Host Summary by File IO Type (sys.x$host_summary_by_file_io_type)
+SELECT * FROM (
+    SELECT '<div id="h_3" class="sub-title">1.3 Host Summary by File IO Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_file_io_type` ORDER BY x$host_summary_by_file_io_type.host, x$host_summary_by_file_io_type.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Max Latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(host,''),
+        '</td><td>',event_name,
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_file_io_type
+        ORDER BY host, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.4 Host Summary by Stages (sys.x$host_summary_by_stages)
+SELECT * FROM (
+    SELECT '<div id="h_4" class="sub-title">1.4 Host Summary by Stages</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_stages` ORDER BY x$host_summary_by_stages.host, x$host_summary_by_stages.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(host,''),
+        '</td><td>',event_name,
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_stages
+        ORDER BY host, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.5 Host Summary by Statement Latency (sys.x$host_summary_by_statement_latency)
+SELECT * FROM (
+    SELECT '<div id="h_5" class="sub-title">1.5 Host Summary by Statement Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_statement_latency` ORDER BY x$host_summary_by_statement_latency.total_latency DESC</pre><table><tr><th>Host</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(host,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',sys.format_time(lock_latency),
+        '</td><td>',sys.format_time(cpu_latency),
+        '</td><td>',FORMAT(rows_sent,0),
+        '</td><td>',FORMAT(rows_examined,0),
+        '</td><td>',FORMAT(rows_affected,0),
+        '</td><td>',FORMAT(full_scans,0),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_statement_latency
+        ORDER BY total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.6 Host Summary by Statement Type (sys.x$host_summary_by_statement_type)
+SELECT * FROM (
+    SELECT '<div id="h_6" class="sub-title">1.6 Host Summary by Statement Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_statement_type` ORDER BY x$host_summary_by_statement_type.host, x$host_summary_by_statement_type.total_latency DESC</pre><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(host,''),
+        '</td><td>',statement,
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',sys.format_time(lock_latency),
+        '</td><td>',sys.format_time(cpu_latency),
+        '</td><td>',FORMAT(rows_sent,0),
+        '</td><td>',FORMAT(rows_examined,0),
+        '</td><td>',FORMAT(rows_affected,0),
+        '</td><td>',FORMAT(full_scans,0),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_statement_type
+        ORDER BY host, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
 SELECT '</details></div>';
 
 -- 5. Main Section: System (Collapsible)
@@ -197,7 +349,7 @@ SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_ta
 
 -- 4.1 Host Summary by Host (sys.x$host_summary)
 SELECT * FROM (
-    SELECT '<div id="h_3" class="sub-title">4.1 Host Summary Overview</div><table><tr><th>Host</th><th>Statements</th><th>Stmt Latency</th><th>Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Conn</th><th>Total Conn</th><th>Unique Users</th><th>Current Mem</th><th>Total Mem Alloc</th></tr>'
+    SELECT '<div id="h_legacy_1" class="sub-title">4.1 Host Summary Overview</div><table><tr><th>Host</th><th>Statements</th><th>Stmt Latency</th><th>Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Conn</th><th>Total Conn</th><th>Unique Users</th><th>Current Mem</th><th>Total Mem Alloc</th></tr>'
 
     UNION ALL
 
@@ -240,7 +392,7 @@ SELECT * FROM (
 
 -- 4.2 Host Summary by File IO Type (sys.x$host_summary_by_file_io_type)
 SELECT * FROM (
-    SELECT '<div id="h_4" class="sub-title">4.2 Host Summary by File IO Type</div><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Max Latency</th></tr>'
+    SELECT '<div id="h_legacy_2" class="sub-title">4.2 Host Summary by File IO Type</div><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Max Latency</th></tr>'
 
     UNION ALL
 
@@ -269,7 +421,7 @@ SELECT * FROM (
 
 -- 4.3 Host Summary by File IO
 SELECT * FROM (
-    SELECT '<div id="h_5" class="sub-title">4.3 Host Summary by File IO</div><table><tr><th>Host</th><th>IOs</th><th>IO Latency</th></tr>'
+    SELECT '<div id="h_legacy_3" class="sub-title">4.3 Host Summary by File IO</div><table><tr><th>Host</th><th>IOs</th><th>IO Latency</th></tr>'
 
     UNION ALL
 
@@ -294,7 +446,7 @@ SELECT * FROM (
 
 -- 4.4 Host Summary by Statement Type
 SELECT * FROM (
-    SELECT '<div id="h_6" class="sub-title">4.4 Host Summary by Statement Type</div><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+    SELECT '<div id="h_legacy_4" class="sub-title">4.4 Host Summary by Statement Type</div><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
@@ -335,7 +487,7 @@ SELECT * FROM (
 
 -- 4.5 Host Summary by Statement Latency
 SELECT * FROM (
-    SELECT '<div id="h_7" class="sub-title">4.5 Host Summary by Statement Latency</div><table><tr><th>Host</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+    SELECT '<div id="h_legacy_5" class="sub-title">4.5 Host Summary by Statement Latency</div><table><tr><th>Host</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
@@ -374,7 +526,7 @@ SELECT * FROM (
 
 -- 4.6 Host Summary by Stages
 SELECT * FROM (
-    SELECT '<div id="h_8" class="sub-title">4.6 Host Summary by Stages</div><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
+    SELECT '<div id="h_legacy_6" class="sub-title">4.6 Host Summary by Stages</div><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
 
     UNION ALL
 
@@ -1155,7 +1307,7 @@ SELECT '</details></div>';
 
 
 -- 4. NEW SECTION: IV. DB Tables Info
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">IV. DB Tables Info</h2></summary>';
+SELECT '<div class="card"><details open id="sec_db_tables"><summary><h2 id="main_db_tables">IV. DB Tables Info</h2></summary>';
 
 -- 4.3 Top 20 Largest Tables
 SELECT * FROM (
