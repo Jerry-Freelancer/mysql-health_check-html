@@ -1,10 +1,11 @@
 /* Stable MySQL Health Report - Collapsible & Linked Sections */
 /* Run: mysql -N -s -f < script.sql > report.html */
 
-SET NAMES utf8mb4;
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 
 -- 1. HTML Header & Enhanced CSS
-SELECT '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>MySQL Health Report</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f7;margin:0;padding:40px;color:#1d1d1f;}h1{font-size:32px;font-weight:600;}h2{font-size:22px;margin:0;cursor:pointer;display:inline-block;}.sub-title{font-size:16px;font-weight:600;color:#424245;margin:25px 0 10px 0;display:flex;align-items:center;}.sub-title::before{content:"";width:4px;height:16px;background:#0071e3;margin-right:8px;border-radius:2px;}.card{background:#ffffff;border-radius:16px;padding:25px;margin-bottom:30px;box-shadow:0 8px 24px rgba(0,0,0,0.06);}table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:15px;}th{padding:10px;text-align:left;border-bottom:1px solid #e5e5e7;background:#fafafa;}td{padding:8px;border-bottom:1px solid #e5e5e7;color:#6e6e73;}tr:hover{background:#fbfbfd;}.directory-grid{display:flex;flex-wrap:wrap;gap:20px;margin-top:15px;}.dir-group{border:1px solid #f0f0f2;padding:15px;border-radius:12px;background:#fbfbfd;min-width:220px;}.dir-group-label{font-size:11px;font-weight:bold;color:#0071e3;text-transform:uppercase;display:block;margin-bottom:8px;}.directory a{display:block;padding:3px 0;color:#1d1d1f;text-decoration:none;font-size:13px;}.directory a:hover{text-decoration:underline;color:#0071e3;}.meta{color:#86868b;font-size:14px;}
+SELECT '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>MySQL Health Report</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f7;margin:0;padding:40px;color:#1d1d1f;}h1{font-size:32px;font-weight:600;}h2{font-size:22px;margin:0;cursor:pointer;display:inline-block;}.sub-title{font-size:16px;font-weight:600;color:#424245;margin:25px 0 10px 0;display:flex;align-items:center;}.sub-title::before{content:"";width:4px;height:16px;background:#0071e3;margin-right:8px;border-radius:2px;}.card{background:#ffffff;border-radius:16px;padding:25px;margin-bottom:30px;box-shadow:0 8px 24px rgba(0,0,0,0.06);}table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:15px;}.query-sql{background:#f6f8fa;border:1px solid #e5e5e7;border-radius:10px;color:#424245;font-family:SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:12px;line-height:1.45;margin:0 0 12px 0;padding:12px;white-space:pre-wrap;}th{padding:10px;text-align:left;border-bottom:1px solid #e5e5e7;background:#fafafa;}td{padding:8px;border-bottom:1px solid #e5e5e7;color:#6e6e73;}tr:hover{background:#fbfbfd;}.directory-grid{display:flex;flex-wrap:wrap;gap:20px;margin-top:15px;}.dir-group{border:1px solid #f0f0f2;padding:15px;border-radius:12px;background:#fbfbfd;min-width:220px;}.dir-group-label{font-size:11px;font-weight:bold;color:#0071e3;text-transform:uppercase;display:block;margin-bottom:8px;}.directory a{display:block;padding:3px 0;color:#1d1d1f;text-decoration:none;font-size:13px;}.directory a:hover{text-decoration:underline;color:#0071e3;}.meta{color:#86868b;font-size:14px;}
 /* Collapsible Styling */
 details summary{outline:none;list-style:none;border-bottom:2px solid #0071e3;padding-bottom:5px;margin-bottom:15px;}
 details summary::-webkit-details-marker{display:none;}
@@ -16,20 +17,172 @@ details[open] summary{margin-bottom:20px;}
 SELECT CONCAT('<div class="card"><h1>MySQL Health Report</h1><div class="meta">Generated: ',DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),'</div><div class="meta">Version: v1.0.0 | Author: Rongping</div></div>');
 
 -- 3. Categorized Directory (Now with Main Section Links)
-SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#sec_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 File IO Type</a><a href="#h_2">1.2 File IO Overview</a></div><div class="dir-group"><a href="#sec_sys" class="dir-group-label">II. Instance Health</a><a href="#s_1">2.1 Basic Health</a><a href="#s_2">2.2 Thread Stats</a></div><div class="dir-group"><a href="#sec_storage" class="dir-group-label">III. Storage & Objects</a><a href="#st_1">3.1 DB Capacity</a><a href="#st_2">3.2 Routines</a></div><div class="dir-group"><a href="#sec_tables" class="dir-group-label">IV. DB Tables Info</a><a href="#t_1">4.1 DB Info</a><a href="#t_2">4.2 Table Numbers</a><a href="#t_3">4.3 Top 20 Largest</a><a href="#t_4">4.4 Engines</a><a href="#t_5">4.5 Auto Inc</a><a href="#t_6">4.6 Full Scans</a><a href="#t_7">4.7 Table Stats</a></div></div></div>';
+SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_system" class="dir-group-label">II. Instance Health</a><a href="#health_info">2.1 Basic Health</a></div><div class="dir-group"><a href="#section_storage" class="dir-group-label">III. Storage & Objects</a><a href="#db_info">3.1 DB Capacity</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">IV. DB Tables Info</a><a href="#t_3">4.3 Top 20 Largest</a><a href="#t_5">4.5 Auto Inc</a><a href="#t_6">4.6 Full Scans</a><a href="#t_7">4.7 Table Stats</a></div></div></div>';
 
 
 -- 4. Main Section: Host Summary (Collapsible)
-SELECT '<div class="card"><details open id="section_host"><summary><h2 id="main_host">1. Performance: Host Summary</h2></summary>';
-    SELECT '<div id="host_io_type" class="sub-title">1.1 Host Summary by File IO Type</div><table><tr><th>Host</th><th>Event</th><th>Total</th><th>Latency</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',host,'</td><td>',event_name,'</td><td>',total,'</td><td>',total_latency,'</td></tr>') FROM sys.x$host_summary_by_file_io_type UNION ALL
-    SELECT '</table>';
-    SELECT '<div id="host_io_summary" class="sub-title">1.2 Host Summary by File IO</div><table><tr><th>Host</th><th>IOs</th><th>Latency</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',host,'</td><td>',ios,'</td><td>',io_latency,'</td></tr>') FROM sys.x$host_summary_by_file_io UNION ALL
-    SELECT '</table>';
-    SELECT '<div id="host_stmt_type" class="sub-title">1.3 Host Summary by Statement Type</div><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Latency</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',host,'</td><td>',statement,'</td><td>',total,'</td><td>',total_latency,'</td></tr>') FROM sys.x$host_summary_by_statement_type UNION ALL
-    SELECT '</table>';
+SELECT '<div class="card"><details open id="section_host"><summary><h2 id="main_host">1. Host Summary</h2></summary>';
+
+-- 1.1 Host Summary Overview (sys.x$host_summary)
+SELECT * FROM (
+    SELECT '<div id="h_1" class="sub-title">1.1 Host Summary Overview</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary` ORDER BY x$host_summary.statement_latency DESC</pre><table><tr><th>Host</th><th>Statements</th><th>Statement Latency</th><th>Statement Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Connections</th><th>Total Connections</th><th>Unique Users</th><th>Current Memory</th><th>Total Memory Allocated</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(statements,0),
+        '</td><td>',sys.format_time(statement_latency),
+        '</td><td>',sys.format_time(statement_avg_latency),
+        '</td><td>',FORMAT(table_scans,0),
+        '</td><td>',FORMAT(file_ios,0),
+        '</td><td>',sys.format_time(file_io_latency),
+        '</td><td>',FORMAT(current_connections,0),
+        '</td><td>',FORMAT(total_connections,0),
+        '</td><td>',FORMAT(unique_users,0),
+        '</td><td>',sys.format_bytes(current_memory),
+        '</td><td>',sys.format_bytes(total_memory_allocated),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary
+        ORDER BY statement_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.2 Host Summary by File IO (sys.x$host_summary_by_file_io)
+SELECT * FROM (
+    SELECT '<div id="h_2" class="sub-title">1.2 Host Summary by File IO</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_file_io` ORDER BY x$host_summary_by_file_io.io_latency DESC</pre><table><tr><th>Host</th><th>IOs</th><th>IO Latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(ios,0),
+        '</td><td>',sys.format_time(io_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_file_io
+        ORDER BY io_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.3 Host Summary by File IO Type (sys.x$host_summary_by_file_io_type)
+SELECT * FROM (
+    SELECT '<div id="h_3" class="sub-title">1.3 Host Summary by File IO Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_file_io_type` ORDER BY x$host_summary_by_file_io_type.host, x$host_summary_by_file_io_type.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Max Latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_file_io_type
+        ORDER BY host, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.4 Host Summary by Stages (sys.x$host_summary_by_stages)
+SELECT * FROM (
+    SELECT '<div id="h_4" class="sub-title">1.4 Host Summary by Stages</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_stages` ORDER BY x$host_summary_by_stages.host, x$host_summary_by_stages.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_stages
+        ORDER BY host, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.5 Host Summary by Statement Latency (sys.x$host_summary_by_statement_latency)
+SELECT * FROM (
+    SELECT '<div id="h_5" class="sub-title">1.5 Host Summary by Statement Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_statement_latency` ORDER BY x$host_summary_by_statement_latency.total_latency DESC</pre><table><tr><th>Host</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',sys.format_time(lock_latency),
+        '</td><td>',sys.format_time(cpu_latency),
+        '</td><td>',FORMAT(rows_sent,0),
+        '</td><td>',FORMAT(rows_examined,0),
+        '</td><td>',FORMAT(rows_affected,0),
+        '</td><td>',FORMAT(full_scans,0),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_statement_latency
+        ORDER BY total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 1.6 Host Summary by Statement Type (sys.x$host_summary_by_statement_type)
+SELECT * FROM (
+    SELECT '<div id="h_6" class="sub-title">1.6 Host Summary by Statement Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_statement_type` ORDER BY x$host_summary_by_statement_type.host, x$host_summary_by_statement_type.total_latency DESC</pre><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(statement USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',sys.format_time(lock_latency),
+        '</td><td>',sys.format_time(cpu_latency),
+        '</td><td>',FORMAT(rows_sent,0),
+        '</td><td>',FORMAT(rows_examined,0),
+        '</td><td>',FORMAT(rows_affected,0),
+        '</td><td>',FORMAT(full_scans,0),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$host_summary_by_statement_type
+        ORDER BY host, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
 SELECT '</details></div>';
 
 -- 5. Main Section: System (Collapsible)
@@ -42,7 +195,7 @@ SELECT '</details></div>';
 -- 6. Main Section: Storage (Collapsible)
 SELECT '<div class="card"><details open id="section_storage"><summary><h2 id="main_storage">3. Storage and Objects</h2></summary>';
     SELECT '<div id="db_info" class="sub-title">3.1 Database Capacity</div><table><tr><th>Schema</th><th>Charset</th><th>Data(MB)</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',SCHEMA_NAME,'</td><td>',DEFAULT_CHARACTER_SET_NAME,'</td><td>',DataMB,'</td></tr>') FROM (SELECT a.SCHEMA_NAME, a.DEFAULT_CHARACTER_SET_NAME, SUM(TRUNCATE(IFNULL(data_length,0)/1024/1024,2)) AS DataMB FROM INFORMATION_SCHEMA.SCHEMATA a LEFT JOIN information_schema.tables b ON a.SCHEMA_NAME=b.TABLE_SCHEMA WHERE a.SCHEMA_NAME NOT IN ("mysql","information_schema","sys","performance_schema") GROUP BY 1,2) t UNION ALL
+    SELECT CONCAT('<tr><td>',IFNULL(CONVERT(SCHEMA_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),'</td><td>',IFNULL(CONVERT(DEFAULT_CHARACTER_SET_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),'</td><td>',DataMB,'</td></tr>') FROM (SELECT a.SCHEMA_NAME, a.DEFAULT_CHARACTER_SET_NAME, SUM(TRUNCATE(IFNULL(data_length,0)/1024/1024,2)) AS DataMB FROM INFORMATION_SCHEMA.SCHEMATA a LEFT JOIN information_schema.tables b ON a.SCHEMA_NAME=b.TABLE_SCHEMA WHERE a.SCHEMA_NAME NOT IN ("mysql","information_schema","sys","performance_schema") GROUP BY 1,2) t UNION ALL
     SELECT '</table>';
 SELECT '</details></div>';
 
@@ -57,24 +210,24 @@ SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_ta
 -- 2.1 Top 95th Percentile Slow SQL (by Avg Time)
     SELECT * FROM (
 
-    SELECT '<div class="sub-title">12.1 Top 95th Percentile Slow SQL (by Avg Time)</div><table><tr><th>QUERY</th><th>SCHEMA_NAME</th><th>fullscan</th><th>COUNT_STAR</th><th>Total_time</th><th>Max_time</th><th>Avg_time</th><th>avg_rows</th><th>avg_scan_rows</th></tr>'
+    SELECT CONVERT('<div class="sub-title">12.1 Top 95th Percentile Slow SQL (by Avg Time)</div><table><tr><th>QUERY</th><th>SCHEMA_NAME</th><th>fullscan</th><th>COUNT_STAR</th><th>Total_time</th><th>Max_time</th><th>Avg_time</th><th>avg_rows</th><th>avg_scan_rows</th></tr>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 
     UNION ALL
 select * from (
-    SELECT CONCAT(
-        '<tr><td>', 
-            REPLACE(sys.format_statement(DIGEST_TEXT),'<','&lt;'),
-        '</td><td>', IFNULL(SCHEMA_NAME,''),
-        '</td><td>', 
+    SELECT CONVERT(CONCAT(
+        '<tr><td>',
+            REPLACE(CONVERT(sys.format_statement(DIGEST_TEXT) USING utf8mb4),'<','&lt;'),
+        '</td><td>', IFNULL(CONVERT(SCHEMA_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',
             IF(SUM_NO_GOOD_INDEX_USED > 0 OR SUM_NO_INDEX_USED > 0,'*',''),
         '</td><td>', COUNT_STAR,
-        '</td><td>', sys.format_time(SUM_TIMER_WAIT),
-        '</td><td>', sys.format_time(MAX_TIMER_WAIT),
-        '</td><td>', sys.format_time(AVG_TIMER_WAIT),
+        '</td><td>', IFNULL(CONVERT(sys.format_time(SUM_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(sys.format_time(MAX_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(sys.format_time(AVG_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>', ROUND(IFNULL(SUM_ROWS_SENT / NULLIF(COUNT_STAR, 0), 0)),
         '</td><td>', ROUND(IFNULL(SUM_ROWS_EXAMINED / NULLIF(COUNT_STAR, 0),0)),
         '</td></tr>'
-    )
+    ) USING utf8mb4) COLLATE utf8mb4_unicode_ci
     FROM performance_schema.events_statements_summary_by_digest stmts
     JOIN sys.x$ps_digest_95th_percentile_by_avg_us AS top_percentile
       ON ROUND(stmts.avg_timer_wait / 1000000) >= top_percentile.avg_us
@@ -82,7 +235,7 @@ ORDER BY AVG_TIMER_WAIT DESC
 LIMIT 10
 ) as y
     UNION ALL
-    SELECT '</table>'
+    SELECT CONVERT('</table>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 ) x;
 
 
@@ -192,221 +345,6 @@ SELECT '</details></div>';
 
 
 
--- 4. Main Section: Host Summary (Collapsible)
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">4. Host Summary</h2></summary>';
-
--- 4.1 Host Summary by Host (sys.x$host_summary)
-SELECT * FROM (
-    SELECT '<div id="h_3" class="sub-title">4.1 Host Summary Overview</div><table><tr><th>Host</th><th>Statements</th><th>Stmt Latency</th><th>Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Conn</th><th>Total Conn</th><th>Unique Users</th><th>Current Mem</th><th>Total Mem Alloc</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',host,
-        '</td><td>',statements,
-        '</td><td>',statement_latency,
-        '</td><td>',statement_avg_latency,
-        '</td><td>',table_scans,
-        '</td><td>',file_ios,
-        '</td><td>',file_io_latency,
-        '</td><td>',current_connections,
-        '</td><td>',total_connections,
-        '</td><td>',unique_users,
-        '</td><td>',current_memory,
-        '</td><td>',total_memory_allocated,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT host,
-               statements,
-               statement_latency,
-               statement_avg_latency,
-               table_scans,
-               file_ios,
-               file_io_latency,
-               current_connections,
-               total_connections,
-               unique_users,
-               current_memory,
-               total_memory_allocated
-        FROM sys.x$host_summary
-        ORDER BY statement_latency DESC
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 4.2 Host Summary by File IO Type (sys.x$host_summary_by_file_io_type)
-SELECT * FROM (
-    SELECT '<div id="h_4" class="sub-title">4.2 Host Summary by File IO Type</div><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Max Latency</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',host,
-        '</td><td>',event_name,
-        '</td><td>',total,
-        '</td><td>',total_latency,
-        '</td><td>',max_latency,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT host,
-               event_name,
-               total,
-               total_latency,
-               max_latency
-        FROM sys.x$host_summary_by_file_io_type
-        ORDER BY host
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 4.3 Host Summary by File IO
-SELECT * FROM (
-    SELECT '<div id="h_5" class="sub-title">4.3 Host Summary by File IO</div><table><tr><th>Host</th><th>IOs</th><th>IO Latency</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',host,
-        '</td><td>',ios,
-        '</td><td>',io_latency,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT host,
-               ios,
-               io_latency
-        FROM sys.x$host_summary_by_file_io
-        ORDER BY io_latency DESC
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 4.4 Host Summary by Statement Type
-SELECT * FROM (
-    SELECT '<div id="h_6" class="sub-title">4.4 Host Summary by Statement Type</div><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',host,
-        '</td><td>',statement,
-        '</td><td>',total,
-        '</td><td>',total_latency,
-        '</td><td>',max_latency,
-        '</td><td>',lock_latency,
-        '</td><td>',cpu_latency,
-        '</td><td>',rows_sent,
-        '</td><td>',rows_examined,
-        '</td><td>',rows_affected,
-        '</td><td>',full_scans,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT host,
-               statement,
-               total,
-               total_latency,
-               max_latency,
-               lock_latency,
-               cpu_latency,
-               rows_sent,
-               rows_examined,
-               rows_affected,
-               full_scans
-        FROM sys.x$host_summary_by_statement_type
-        ORDER BY host, total_latency DESC
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 4.5 Host Summary by Statement Latency
-SELECT * FROM (
-    SELECT '<div id="h_7" class="sub-title">4.5 Host Summary by Statement Latency</div><table><tr><th>Host</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',host,
-        '</td><td>',total,
-        '</td><td>',total_latency,
-        '</td><td>',max_latency,
-        '</td><td>',lock_latency,
-        '</td><td>',cpu_latency,
-        '</td><td>',rows_sent,
-        '</td><td>',rows_examined,
-        '</td><td>',rows_affected,
-        '</td><td>',full_scans,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT host,
-               total,
-               total_latency,
-               max_latency,
-               lock_latency,
-               cpu_latency,
-               rows_sent,
-               rows_examined,
-               rows_affected,
-               full_scans
-        FROM sys.x$host_summary_by_statement_latency
-        ORDER BY total_latency DESC
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 4.6 Host Summary by Stages
-SELECT * FROM (
-    SELECT '<div id="h_8" class="sub-title">4.6 Host Summary by Stages</div><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',host,
-        '</td><td>',event_name,
-        '</td><td>',total,
-        '</td><td>',total_latency,
-        '</td><td>',avg_latency,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT host,
-               event_name,
-               total,
-               total_latency,
-               avg_latency
-        FROM sys.x$host_summary_by_stages
-        ORDER BY host, total_latency DESC
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-SELECT '</details></div>';
-
-
-
-
-
-
 -- 5. User Summary
 SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">5. User Summary</h2></summary>';
 
@@ -452,7 +390,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',user,
+        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',statements,
         '</td><td>',ROUND(statement_latency/1000000000000,6),
         '</td><td>',ROUND(statement_avg_latency/1000000000,3),
@@ -481,7 +419,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',user,
+        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',ios,
         '</td><td>',ROUND(io_latency/1000000000000,6),
         '</td></tr>'
@@ -505,8 +443,8 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',user,
-        '</td><td>',event_name,
+        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',total,
         '</td><td>',ROUND(latency/1000000000000,6),
         '</td><td>',ROUND(max_latency/1000000000,3),
@@ -531,8 +469,8 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',user,
-        '</td><td>',event_name,
+        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',total,
         '</td><td>',ROUND(total_latency/1000000000000,6),
         '</td><td>',ROUND(avg_latency/1000000000,3),
@@ -557,8 +495,8 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',user,
-        '</td><td>',statement,
+        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(statement USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',total,
         '</td><td>',ROUND(total_latency/1000000000000,6),
         '</td><td>',ROUND(max_latency/1000000000,3),
@@ -589,7 +527,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',user,
+        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',total,
         '</td><td>',ROUND(total_latency/1000000000000,6),
         '</td><td>',ROUND(max_latency/1000000000,3),
@@ -629,7 +567,7 @@ SELECT * FROM (
 
     SELECT CONCAT(
         '<tr><td>',
-        CONVERT(host USING utf8mb4),
+        IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',current_count_used,
         '</td><td>',current_allocated,
         '</td><td>',current_avg_alloc,
@@ -654,7 +592,7 @@ SELECT * FROM (
 
     SELECT CONCAT(
         '<tr><td>',thread_id,
-        '</td><td>',user,
+        '</td><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',current_count_used,
         '</td><td>',current_allocated,
         '</td><td>',current_avg_alloc,
@@ -682,7 +620,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',user,
+        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',current_count_used,
         '</td><td>',current_allocated,
         '</td><td>',current_avg_alloc,
@@ -710,7 +648,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',event_name,
+        '<tr><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',current_count,
         '</td><td>',current_alloc,
         '</td><td>',current_avg_alloc,
@@ -744,8 +682,8 @@ SELECT * FROM (
 SELECT '<div class="sub-title">7.1 Waits by Host</div><table><tr><th>host</th><th>event</th><th>total</th><th>total_seconds</th><th>avg_ms</th><th>max_ms</th></tr>'
 UNION ALL
 SELECT CONCAT(
-'<tr><td>',host,
-'</td><td>',event,
+'<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+'</td><td>',IFNULL(CONVERT(event USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
 '</td><td>',total,
 '</td><td>',ROUND(total_latency/1000000000000,2),
 '</td><td>',ROUND(avg_latency/1000000000,2),
@@ -767,8 +705,8 @@ SELECT * FROM (
 SELECT '<div class="sub-title">7.2 Waits by User</div><table><tr><th>user</th><th>event</th><th>total</th><th>total_seconds</th><th>avg_ms</th><th>max_ms</th></tr>'
 UNION ALL
 SELECT CONCAT(
-'<tr><td>',user,
-'</td><td>',event,
+'<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+'</td><td>',IFNULL(CONVERT(event USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
 '</td><td>',total,
 '</td><td>',ROUND(total_latency/1000000000000,2),
 '</td><td>',ROUND(avg_latency/1000000000,2),
@@ -868,7 +806,7 @@ SELECT * FROM (
 SELECT '<div class="sub-title">8.1 IO by Thread by Latency</div><table><tr><th>user</th><th>thread_id</th><th>processlist_id</th><th>total</th><th>total_seconds</th><th>min_ms</th><th>avg_ms</th><th>max_ms</th></tr>'
 UNION ALL
 SELECT CONCAT(
-'<tr><td>',user,
+'<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
 '</td><td>',thread_id,
 '</td><td>',IFNULL(processlist_id,''),
 '</td><td>',total,
@@ -896,7 +834,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',file,
+        '<tr><td>',IFNULL(CONVERT(file USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',count_read,
         '</td><td>',ROUND(total_read/1024/1024,2),
         '</td><td>',ROUND(avg_read/1024,2),
@@ -955,7 +893,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>', event_name,
+        '<tr><td>', IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>', total,
         '</td><td>', ROUND(total_latency/1000000000,6),
         '</td><td>', ROUND(min_latency/1000000000,6),
@@ -989,7 +927,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>', event_name,
+        '<tr><td>', IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>', total,
         '</td><td>', ROUND(total_latency/1000000000,6),
         '</td><td>', ROUND(avg_latency/1000000000,6),
@@ -1083,14 +1021,7 @@ SELECT * FROM (
 
     UNION ALL
 
-    SELECT CONCAT(
-        '<tr><td>',  IFNULL(formatID,''),
-        '</td><td>', IFNULL(gtrid_length,''),
-        '</td><td>', IFNULL(bqual_length,''),
-        '</td><td>', IFNULL(data,''),
-        '</td></tr>'
-    )
-    FROM XA_RECOVER_CONVERT xid
+    SELECT '<tr><td colspan="4">Run XA RECOVER CONVERT XID manually to inspect prepared XA transactions; MySQL does not expose XA RECOVER as a selectable table in this HTML SELECT block.</td></tr>'
 
     UNION ALL
     SELECT '</table>'
@@ -1105,44 +1036,50 @@ SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_ta
 
 -- 11.1 Plugins info
 SELECT * FROM (
-    SELECT '<div class="sub-title">11.1 Plugins Info</div><table><tr><th>Name</th><th>Status</th><th>Type</th><th>Library</th><th>License</th></tr>'
+    SELECT CONVERT('<div class="sub-title">11.1 Plugins Info</div><table><tr><th>Name</th><th>Status</th><th>Type</th><th>Library</th><th>License</th></tr>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
     
     UNION ALL
 
-    SELECT CONCAT(
-        '<tr><td>', Name,
-        '</td><td>', Status,
-        '</td><td>', Type,
-        '</td><td>', IFNULL(Library,''),
-        '</td><td>', License,
+    SELECT CONVERT(CONCAT(
+        '<tr><td>', IFNULL(CONVERT(PLUGIN_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_STATUS USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_TYPE USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_LIBRARY USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_LICENSE USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td></tr>'
-    )
-    FROM information_schema.PLUGINS
-    ORDER BY Name
+    ) USING utf8mb4) COLLATE utf8mb4_unicode_ci
+    FROM (
+        SELECT PLUGIN_NAME, PLUGIN_STATUS, PLUGIN_TYPE, PLUGIN_LIBRARY, PLUGIN_LICENSE
+        FROM information_schema.PLUGINS
+        ORDER BY PLUGIN_NAME
+    ) p
 
     UNION ALL
-    SELECT '</table>'
+    SELECT CONVERT('</table>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 ) x;
 
 
 -- 11.2 Components Info
 
 SELECT * FROM (
-    SELECT '<div class="sub-title">11.2 Components Info</div><table><tr><th>component_id</th><th>component_group_id</th><th>component_urn</th></tr>'
+    SELECT CONVERT('<div class="sub-title">11.2 Components Info</div><table><tr><th>component_id</th><th>component_group_id</th><th>component_urn</th></tr>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
     
     UNION ALL
 
-    SELECT CONCAT(
+    SELECT CONVERT(CONCAT(
         '<tr><td>', component_id,
         '</td><td>', component_group_id,
-        '</td><td>', component_urn,
+        '</td><td>', IFNULL(CONVERT(component_urn USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td></tr>'
-    )
-    FROM mysql.component
-    ORDER BY component_id
+    ) USING utf8mb4) COLLATE utf8mb4_unicode_ci
+    FROM (
+        SELECT component_id, component_group_id, component_urn
+        FROM mysql.component
+        ORDER BY component_id
+    ) c
 
     UNION ALL
-    SELECT '</table>'
+    SELECT CONVERT('</table>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 ) x;
 
 
@@ -1155,7 +1092,7 @@ SELECT '</details></div>';
 
 
 -- 4. NEW SECTION: IV. DB Tables Info
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">IV. DB Tables Info</h2></summary>';
+SELECT '<div class="card"><details open id="sec_db_tables"><summary><h2 id="main_db_tables">IV. DB Tables Info</h2></summary>';
 
 -- 4.3 Top 20 Largest Tables
 SELECT * FROM (
@@ -1164,10 +1101,10 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',TABLE_SCHEMA,
-        '</td><td>',table_name,
+        '<tr><td>',IFNULL(CONVERT(TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',IFNULL(table_rows,0),
-        '</td><td>',ENGINE,
+        '</td><td>',IFNULL(CONVERT(ENGINE USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',truncate(data_length/1024/1024,2),
         '</td><td>',truncate(index_length/1024/1024,2),
         '</td><td>',truncate(DATA_FREE/1024/1024,2),
@@ -1192,9 +1129,9 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',table_schema,
-        '</td><td>',table_name,
-        '</td><td>',engine,
+        '<tr><td>',IFNULL(CONVERT(table_schema USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(engine USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',auto_increment,
         '</td></tr>'
     )
@@ -1219,8 +1156,8 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',object_schema,
-        '</td><td>',object_name,
+        '<tr><td>',IFNULL(CONVERT(object_schema USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(object_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',rows_full_scanned,
         '</td><td>',latency,
         '</td></tr>'
@@ -1243,7 +1180,7 @@ SELECT * FROM (
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',table_schema,'.',table_name,
+        '<tr><td>',IFNULL(CONVERT(table_schema USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),'.',IFNULL(CONVERT(table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',total_latency,
         '</td><td>',rows_fetched,
         '</td><td>',rows_inserted,
