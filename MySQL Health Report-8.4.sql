@@ -17,7 +17,7 @@ details[open] summary{margin-bottom:20px;}
 SELECT CONCAT('<div class="card"><h1>MySQL Health Report</h1><div class="meta">Generated: ',DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),'</div><div class="meta">Version: v1.0.0 | Author: Rongping</div></div>');
 
 -- 3. Categorized Directory (Now with Main Section Links)
-SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_user" class="dir-group-label">III. User Summary</a><a href="#u_1">3.1 User Overview</a><a href="#u_2">3.2 File IO</a><a href="#u_3">3.3 File IO Type</a><a href="#u_4">3.4 Stages</a><a href="#u_5">3.5 Statement Latency</a><a href="#u_6">3.6 Statement Type</a></div><div class="dir-group"><a href="#section_memory" class="dir-group-label">IV. Memory Summary</a><a href="#m_1">4.1 Memory by Host</a><a href="#m_2">4.2 Memory by Thread</a><a href="#m_3">4.3 Memory by User</a><a href="#m_4">4.4 Memory Global</a></div><div class="dir-group"><a href="#section_wait" class="dir-group-label">V. Wait Summary</a><a href="#w_1">5.1 Global Latency</a><a href="#w_2">5.2 By User</a><a href="#w_3">5.3 By Host</a><a href="#w_4">5.4 Classes Latency</a><a href="#w_5">5.5 Classes Avg Latency</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">VI. DB Tables Info</a><a href="#t_3">Top 20 Largest</a><a href="#t_5">Auto Inc</a><a href="#t_6">Full Scans</a><a href="#t_7">Table Stats</a></div></div></div>';
+SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_user" class="dir-group-label">III. User Summary</a><a href="#u_1">3.1 User Overview</a><a href="#u_2">3.2 File IO</a><a href="#u_3">3.3 File IO Type</a><a href="#u_4">3.4 Stages</a><a href="#u_5">3.5 Statement Latency</a><a href="#u_6">3.6 Statement Type</a></div><div class="dir-group"><a href="#section_memory" class="dir-group-label">IV. Memory Summary</a><a href="#m_1">4.1 Memory by Host</a><a href="#m_2">4.2 Memory by Thread</a><a href="#m_3">4.3 Memory by User</a><a href="#m_4">4.4 Memory Global</a></div><div class="dir-group"><a href="#section_wait" class="dir-group-label">V. Wait Summary</a><a href="#w_1">5.1 Global Latency</a><a href="#w_2">5.2 By User</a><a href="#w_3">5.3 By Host</a><a href="#w_4">5.4 Classes Latency</a><a href="#w_5">5.5 Classes Avg Latency</a></div><div class="dir-group"><a href="#section_index" class="dir-group-label">VI. Index Summary</a><a href="#idx_1">6.1 Index Statistics</a><a href="#idx_2">6.2 Redundant Indexes</a><a href="#idx_3">6.3 Unused Indexes</a><a href="#idx_4">6.4 Low Selectivity</a><a href="#idx_5">6.5 Tables Without PK</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">VII. DB Tables Info</a><a href="#t_3">Top 20 Largest</a><a href="#t_5">Auto Inc</a><a href="#t_6">Full Scans</a><a href="#t_7">Table Stats</a></div></div></div>';
 
 
 -- 4. Main Section: Host Summary (Collapsible)
@@ -859,8 +859,168 @@ SELECT '</details></div>';
 
 
 
--- 4. NEW SECTION: IV. DB Tables Info
-SELECT '<div class="card"><details open id="sec_db_tables"><summary><h2 id="main_db_tables">IV. DB Tables Info</h2></summary>';
+
+-- 6. Index Summary
+SELECT '<div class="card"><details open id="section_index"><summary><h2 id="main_index">6. Index Summary</h2></summary>';
+
+-- 6.1 Schema Index Statistics (sys.x$schema_index_statistics)
+SELECT * FROM (
+    SELECT '<div id="idx_1" class="sub-title">6.1 Schema Index Statistics</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$schema_index_statistics` WHERE table_schema not in (''mysql'',''sys'',''performance_schema'',''information_schema'') ORDER BY (x$schema_index_statistics.select_latency+x$schema_index_statistics.insert_latency+x$schema_index_statistics.update_latency+x$schema_index_statistics.delete_latency) DESC</pre><table><tr><th>table_schema</th><th>table_name</th><th>index_name</th><th>rows_selected</th><th>select_latency</th><th>rows_inserted</th><th>insert_latency</th><th>rows_updated</th><th>update_latency</th><th>rows_deleted</th><th>delete_latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(table_schema USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(index_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(rows_selected,0),
+        '</td><td>',sys.format_time(select_latency),
+        '</td><td>',FORMAT(rows_inserted,0),
+        '</td><td>',sys.format_time(insert_latency),
+        '</td><td>',FORMAT(rows_updated,0),
+        '</td><td>',sys.format_time(update_latency),
+        '</td><td>',FORMAT(rows_deleted,0),
+        '</td><td>',sys.format_time(delete_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$schema_index_statistics
+        WHERE table_schema NOT IN ('mysql','sys','performance_schema','information_schema')
+        ORDER BY (select_latency + insert_latency + update_latency + delete_latency) DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 6.2 Schema Redundant Indexes (sys.schema_redundant_indexes)
+SELECT * FROM (
+    SELECT '<div id="idx_2" class="sub-title">6.2 Schema Redundant Indexes</div><pre class="query-sql"># Query:\n#\tselect * from sys.schema_redundant_indexes</pre><table><tr><th>table_schema</th><th>table_name</th><th>redundant_index_name</th><th>redundant_index_columns</th><th>redundant_index_non_unique</th><th>dominant_index_name</th><th>dominant_index_columns</th><th>dominant_index_non_unique</th><th>subpart_exists</th><th>sql_drop_index</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(table_schema USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(redundant_index_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(redundant_index_columns USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(redundant_index_non_unique,''),
+        '</td><td>',IFNULL(CONVERT(dominant_index_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(dominant_index_columns USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(dominant_index_non_unique,''),
+        '</td><td>',IFNULL(subpart_exists,''),
+        '</td><td>',IFNULL(CONVERT(sql_drop_index USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td></tr>'
+    )
+    FROM sys.schema_redundant_indexes
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 6.3 Schema Unused Indexes (sys.schema_unused_indexes)
+SELECT * FROM (
+    SELECT '<div id="idx_3" class="sub-title">6.3 Schema Unused Indexes</div><pre class="query-sql"># Query:\n#\tSELECT * FROM sys.schema_unused_indexes where object_schema not in (''performance_schema'',''information_chema'',''mysql'',''sys'');</pre><table><tr><th>object_schema</th><th>object_name</th><th>index_name</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(object_schema USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(object_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(index_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.schema_unused_indexes
+        WHERE object_schema NOT IN ('performance_schema','information_chema','mysql','sys')
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 6.4 Low Selectivity Secondary Indexes (mysql.innodb_index_stats)
+SELECT * FROM (
+    SELECT '<div id="idx_4" class="sub-title">6.4 Low Selectivity Secondary Indexes</div><pre class="query-sql"># Query:\n#\tSELECT i.database_name AS db_name,i.table_name AS table_name,i.index_name AS index_name,i.stat_value AS def_Rows,\n#\t    t.n_rows AS total_rows,\n#\t    ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,\n#\t                        i.stat_value,\n#\t                        t.n_rows),\n#\t                    0.01))),\n#\t            2) AS sel_persent\n#\t FROM\n#\t    mysql.innodb_index_stats i\n#\t        INNER JOIN\n#\t    mysql.innodb_table_stats t ON i.database_name = t.database_name\n#\t        AND i.table_name = t.table_name\n#\t WHERE\n#\t    i.index_name != ''PRIMARY''\n#\t        AND i.stat_name LIKE ''%n_diff_pfx%''\n#\t        AND ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,\n#\t                        i.stat_value,\n#\t                        t.n_rows),\n#\t                    0.01))),\n#\t            2) < 0.1;</pre><table><tr><th>db_name</th><th>table_name</th><th>index_name</th><th>def_Rows</th><th>total_rows</th><th>sel_persent</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(db_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(index_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(def_Rows,0),
+        '</td><td>',FORMAT(total_rows,0),
+        '</td><td>',sel_persent,
+        '</td></tr>'
+    )
+    FROM (
+        SELECT i.database_name AS db_name,
+               i.table_name AS table_name,
+               i.index_name AS index_name,
+               i.stat_value AS def_Rows,
+               t.n_rows AS total_rows,
+               ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,
+                                   i.stat_value,
+                                   t.n_rows),
+                               0.01))),
+                       2) AS sel_persent
+        FROM mysql.innodb_index_stats i
+        INNER JOIN mysql.innodb_table_stats t
+          ON i.database_name = t.database_name
+         AND i.table_name = t.table_name
+        WHERE i.index_name != 'PRIMARY'
+          AND i.stat_name LIKE '%n_diff_pfx%'
+          AND ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,
+                              i.stat_value,
+                              t.n_rows),
+                          0.01))),
+                  2) < 0.1
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 6.5 Tables Without Primary Key (information_schema.tables/statistics)
+SELECT * FROM (
+    SELECT '<div id="idx_5" class="sub-title">6.5 Tables Without Primary Key</div><pre class="query-sql"># Query:\n#\tSELECT t.table_schema, t.table_name, t.table_rows, t.engine, t.data_length, t.index_length \n#\t            FROM information_schema.tables t \n#\t              LEFT JOIN information_schema.statistics s on t.table_schema=s.table_schema and t.table_name=s.table_name and s.index_name=''PRIMARY'' \n#\t            WHERE s.index_name is NULL and t.table_type = ''BASE TABLE'' \n#\t                and t.table_schema not in (''performance_schema'', ''sys'', ''mysql'', ''information_schema'')</pre><table><tr><th>TABLE_SCHEMA</th><th>TABLE_NAME</th><th>TABLE_ROWS</th><th>ENGINE</th><th>DATA_LENGTH</th><th>INDEX_LENGTH</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(table_schema USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(table_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(table_rows,0),
+        '</td><td>',IFNULL(CONVERT(engine USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(data_length,0),
+        '</td><td>',FORMAT(index_length,0),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT t.table_schema, t.table_name, t.table_rows, t.engine, t.data_length, t.index_length
+        FROM information_schema.tables t
+        LEFT JOIN information_schema.statistics s
+          ON t.table_schema = s.table_schema
+         AND t.table_name = s.table_name
+         AND s.index_name = 'PRIMARY'
+        WHERE s.index_name IS NULL
+          AND t.table_type = 'BASE TABLE'
+          AND t.table_schema NOT IN ('performance_schema', 'sys', 'mysql', 'information_schema')
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+SELECT '</details></div>';
+
+
+
+-- 7. DB Tables Info
+SELECT '<div class="card"><details open id="sec_db_tables"><summary><h2 id="main_db_tables">VII. DB Tables Info</h2></summary>';
 
 -- 4.3 Top 20 Largest Tables
 SELECT * FROM (
