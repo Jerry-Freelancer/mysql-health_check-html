@@ -17,7 +17,7 @@ details[open] summary{margin-bottom:20px;}
 SELECT CONCAT('<div class="card"><h1>MySQL Health Report</h1><div class="meta">Generated: ',DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),'</div><div class="meta">Version: v1.0.0 | Author: Rongping</div></div>');
 
 -- 3. Categorized Directory (Now with Main Section Links)
-SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_system" class="dir-group-label">III. Instance Health</a><a href="#health_info">3.1 Basic Health</a></div><div class="dir-group"><a href="#section_storage" class="dir-group-label">IV. Storage & Objects</a><a href="#db_info">4.1 DB Capacity</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">V. DB Tables Info</a><a href="#t_3">4.3 Top 20 Largest</a><a href="#t_5">4.5 Auto Inc</a><a href="#t_6">4.6 Full Scans</a><a href="#t_7">4.7 Table Stats</a></div></div></div>';
+SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_user" class="dir-group-label">III. User Summary</a><a href="#u_1">3.1 User Overview</a><a href="#u_2">3.2 File IO</a><a href="#u_3">3.3 File IO Type</a><a href="#u_4">3.4 Stages</a><a href="#u_5">3.5 Statement Latency</a><a href="#u_6">3.6 Statement Type</a></div><div class="dir-group"><a href="#section_system" class="dir-group-label">IV. Instance Health</a><a href="#health_info">Basic Health</a></div><div class="dir-group"><a href="#section_storage" class="dir-group-label">V. Storage & Objects</a><a href="#db_info">DB Capacity</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">VI. DB Tables Info</a><a href="#t_3">Top 20 Largest</a><a href="#t_5">Auto Inc</a><a href="#t_6">Full Scans</a><a href="#t_7">Table Stats</a></div></div></div>';
 
 
 -- 4. Main Section: Host Summary (Collapsible)
@@ -498,213 +498,170 @@ SELECT '</details></div>';
 
 
 
--- 5. User Summary
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">5. User Summary</h2></summary>';
+-- 3. User Summary
+SELECT '<div class="card"><details open id="section_user"><summary><h2 id="main_user">3. User Summary</h2></summary>';
 
--- 5.1 Account Overview
+-- 3.1 User Summary Overview (sys.x$user_summary)
 SELECT * FROM (
-    SELECT '<div id="account_1" class="sub-title">5.1 Account Overview</div><table><tr><th>Account</th><th>Super Priv</th><th>Password Expired</th><th>Password Last Changed</th><th>Password Lifetime</th><th>Account Locked</th><th>Auth Plugin</th></tr>'
+    SELECT '<div id="u_1" class="sub-title">3.1 User Summary Overview</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary` ORDER BY x$user_summary.statement_latency DESC</pre><table><tr><th>User</th><th>Statements</th><th>Statement Latency</th><th>Statement Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Connections</th><th>Total Connections</th><th>Unique Hosts</th><th>Current Memory</th><th>Total Memory Allocated</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',Account,
-        '</td><td>',IFNULL(Super_priv,''),
-        '</td><td>',IFNULL(password_expired,''),
-        '</td><td>',IFNULL(password_last_changed,''),
-        '</td><td>',IFNULL(password_lifetime,''),
-        '</td><td>',IFNULL(account_locked,''),
-        '</td><td>',IFNULL(plugin,''),
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(statements,0),
+        '</td><td>',sys.format_time(statement_latency),
+        '</td><td>',sys.format_time(statement_avg_latency),
+        '</td><td>',FORMAT(table_scans,0),
+        '</td><td>',FORMAT(file_ios,0),
+        '</td><td>',sys.format_time(file_io_latency),
+        '</td><td>',FORMAT(current_connections,0),
+        '</td><td>',FORMAT(total_connections,0),
+        '</td><td>',FORMAT(unique_hosts,0),
+        '</td><td>',sys.format_bytes(current_memory),
+        '</td><td>',sys.format_bytes(total_memory_allocated),
         '</td></tr>'
     )
     FROM (
-        SELECT 
-            CONCAT(User,'@',Host) AS Account,
-            Super_priv,
-            password_expired,
-            password_last_changed,
-            password_lifetime,
-            account_locked,
-            plugin
-        FROM mysql.user
-        ORDER BY User,Host
+        SELECT *
+        FROM sys.x$user_summary
+        ORDER BY statement_latency DESC
     ) t1
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
 
-
--- 5.2 User Summary
+-- 3.2 User Summary by File IO (sys.x$user_summary_by_file_io)
 SELECT * FROM (
-    SELECT '<div id="perf_user" class="sub-title">5.2 User Performance Summary</div><table><tr><th>user</th><th>statements</th><th>statement_latency (sec)</th><th>statement_avg_latency (ms)</th><th>table_scans</th><th>file_ios</th><th>file_io_latency (sec)</th><th>current_connections</th><th>total_connections</th><th>unique_hosts</th><th>current_memory</th><th>total_memory_allocated</th></tr>'
+    SELECT '<div id="u_2" class="sub-title">3.2 User Summary by File IO</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_file_io` ORDER BY x$user_summary_by_file_io.io_latency DESC</pre><table><tr><th>User</th><th>IOs</th><th>IO Latency</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',statements,
-        '</td><td>',ROUND(statement_latency/1000000000000,6),
-        '</td><td>',ROUND(statement_avg_latency/1000000000,3),
-        '</td><td>',table_scans,
-        '</td><td>',file_ios,
-        '</td><td>',ROUND(file_io_latency/1000000000000,6),
-        '</td><td>',current_connections,
-        '</td><td>',total_connections,
-        '</td><td>',unique_hosts,
-        '</td><td>',current_memory,
-        '</td><td>',total_memory_allocated,
-        '</td></tr>'
-    )
-    FROM sys.x$user_summary
-
-    UNION ALL
-
-    SELECT '</table>'
-) x;
-
-
--- 5.3 User File IO Summary
-SELECT * FROM (
-    SELECT '<div id="perf_user_io" class="sub-title">5.3 User File IO Summary</div><table><tr><th>user</th><th>ios</th><th>io_latency (sec)</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',ios,
-        '</td><td>',ROUND(io_latency/1000000000000,6),
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(ios,0),
+        '</td><td>',sys.format_time(io_latency),
         '</td></tr>'
     )
     FROM (
         SELECT *
         FROM sys.x$user_summary_by_file_io
         ORDER BY io_latency DESC
-    ) t
+    ) t1
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
 
-
--- 5.4 User File IO Type Summary
+-- 3.3 User Summary by File IO Type (sys.x$user_summary_by_file_io_type)
 SELECT * FROM (
-    SELECT '<div id="perf_user_io_type" class="sub-title">5.4 User File IO Type Summary</div><table><tr><th>user</th><th>event_name</th><th>total</th><th>latency (sec)</th><th>max_latency (ms)</th></tr>'
+    SELECT '<div id="u_3" class="sub-title">3.3 User Summary by File IO Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_file_io_type` ORDER BY x$user_summary_by_file_io_type.user, x$user_summary_by_file_io_type.latency DESC</pre><table><tr><th>User</th><th>Event Name</th><th>Total</th><th>Latency</th><th>Max Latency</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',total,
-        '</td><td>',ROUND(latency/1000000000000,6),
-        '</td><td>',ROUND(max_latency/1000000000,3),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(latency),
+        '</td><td>',sys.format_time(max_latency),
         '</td></tr>'
     )
     FROM (
         SELECT *
         FROM sys.x$user_summary_by_file_io_type
-        ORDER BY user, latency DESC
-    ) t
+        ORDER BY `user`, latency DESC
+    ) t1
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
 
-
--- 5.5 User Stage Summary (Unit Normalized)
+-- 3.4 User Summary by Stages (sys.x$user_summary_by_stages)
 SELECT * FROM (
-    SELECT '<div id="perf_user_stage" class="sub-title">5.5 User Stage Summary</div><table><tr><th>user</th><th>event_name</th><th>total</th><th>total_latency (sec)</th><th>avg_latency (ms)</th></tr>'
+    SELECT '<div id="u_4" class="sub-title">3.4 User Summary by Stages</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_stages` ORDER BY x$user_summary_by_stages.user, x$user_summary_by_stages.total_latency DESC</pre><table><tr><th>User</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',total,
-        '</td><td>',ROUND(total_latency/1000000000000,6),
-        '</td><td>',ROUND(avg_latency/1000000000,3),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(avg_latency),
         '</td></tr>'
     )
     FROM (
         SELECT *
         FROM sys.x$user_summary_by_stages
-        ORDER BY user, total_latency DESC
-    ) t
+        ORDER BY `user`, total_latency DESC
+    ) t1
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
 
-
--- 5.6 User Statement Type Summary
+-- 3.5 User Summary by Statement Latency (sys.x$user_summary_by_statement_latency)
 SELECT * FROM (
-    SELECT '<div id="perf_user_stmt" class="sub-title">5.6 User Statement Type Summary</div><table><tr><th>user</th><th>statement</th><th>total</th><th>total_latency (sec)</th><th>max_latency (ms)</th><th>lock_latency (ms)</th><th>cpu_latency (ms)</th><th>rows_sent</th><th>rows_examined</th><th>rows_affected</th><th>full_scans</th></tr>'
+    SELECT '<div id="u_5" class="sub-title">3.5 User Summary by Statement Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_statement_latency` ORDER BY x$user_summary_by_statement_latency.total_latency DESC</pre><table><tr><th>User</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',IFNULL(CONVERT(statement USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',total,
-        '</td><td>',ROUND(total_latency/1000000000000,6),
-        '</td><td>',ROUND(max_latency/1000000000,3),
-        '</td><td>',ROUND(lock_latency/1000000000,3),
-        '</td><td>',ROUND(cpu_latency/1000000000,3),
-        '</td><td>',rows_sent,
-        '</td><td>',rows_examined,
-        '</td><td>',rows_affected,
-        '</td><td>',full_scans,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT *
-        FROM sys.x$user_summary_by_statement_type
-        ORDER BY user, total_latency DESC
-    ) t
-
-    UNION ALL
-
-    SELECT '</table>'
-) x;
-
-
--- 5.7 User Statement Latency Summary (Unit Normalized)
-SELECT * FROM (
-    SELECT '<div id="perf_user_stmt_latency" class="sub-title">5.7 User Statement Latency Summary</div><table><tr><th>user</th><th>total</th><th>total_latency (sec)</th><th>max_latency (ms)</th><th>lock_latency (ms)</th><th>cpu_latency (ms)</th><th>rows_sent</th><th>rows_examined</th><th>rows_affected</th><th>full_scans</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',total,
-        '</td><td>',ROUND(total_latency/1000000000000,6),
-        '</td><td>',ROUND(max_latency/1000000000,3),
-        '</td><td>',ROUND(lock_latency/1000000000,3),
-        '</td><td>',ROUND(cpu_latency/1000000000,3),
-        '</td><td>',rows_sent,
-        '</td><td>',rows_examined,
-        '</td><td>',rows_affected,
-        '</td><td>',full_scans,
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',sys.format_time(lock_latency),
+        '</td><td>',sys.format_time(cpu_latency),
+        '</td><td>',FORMAT(rows_sent,0),
+        '</td><td>',FORMAT(rows_examined,0),
+        '</td><td>',FORMAT(rows_affected,0),
+        '</td><td>',FORMAT(full_scans,0),
         '</td></tr>'
     )
     FROM (
         SELECT *
         FROM sys.x$user_summary_by_statement_latency
         ORDER BY total_latency DESC
-    ) t
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 3.6 User Summary by Statement Type (sys.x$user_summary_by_statement_type)
+SELECT * FROM (
+    SELECT '<div id="u_6" class="sub-title">3.6 User Summary by Statement Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_statement_type` ORDER BY x$user_summary_by_statement_type.user, x$user_summary_by_statement_type.total_latency DESC</pre><table><tr><th>User</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(statement USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',sys.format_time(lock_latency),
+        '</td><td>',sys.format_time(cpu_latency),
+        '</td><td>',FORMAT(rows_sent,0),
+        '</td><td>',FORMAT(rows_examined,0),
+        '</td><td>',FORMAT(rows_affected,0),
+        '</td><td>',FORMAT(full_scans,0),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$user_summary_by_statement_type
+        ORDER BY `user`, total_latency DESC
+    ) t1
+
+    UNION ALL
     SELECT '</table>'
 ) x;
 
 SELECT '</details></div>';
-
 
 
 
