@@ -210,24 +210,24 @@ SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_ta
 -- 2.1 Top 95th Percentile Slow SQL (by Avg Time)
     SELECT * FROM (
 
-    SELECT '<div class="sub-title">12.1 Top 95th Percentile Slow SQL (by Avg Time)</div><table><tr><th>QUERY</th><th>SCHEMA_NAME</th><th>fullscan</th><th>COUNT_STAR</th><th>Total_time</th><th>Max_time</th><th>Avg_time</th><th>avg_rows</th><th>avg_scan_rows</th></tr>'
+    SELECT CONVERT('<div class="sub-title">12.1 Top 95th Percentile Slow SQL (by Avg Time)</div><table><tr><th>QUERY</th><th>SCHEMA_NAME</th><th>fullscan</th><th>COUNT_STAR</th><th>Total_time</th><th>Max_time</th><th>Avg_time</th><th>avg_rows</th><th>avg_scan_rows</th></tr>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 
     UNION ALL
 select * from (
-    SELECT CONCAT(
-        '<tr><td>', 
-            REPLACE(sys.format_statement(DIGEST_TEXT),'<','&lt;'),
-        '</td><td>', IFNULL(SCHEMA_NAME,''),
-        '</td><td>', 
+    SELECT CONVERT(CONCAT(
+        '<tr><td>',
+            REPLACE(CONVERT(sys.format_statement(DIGEST_TEXT) USING utf8mb4),'<','&lt;'),
+        '</td><td>', IFNULL(CONVERT(SCHEMA_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',
             IF(SUM_NO_GOOD_INDEX_USED > 0 OR SUM_NO_INDEX_USED > 0,'*',''),
         '</td><td>', COUNT_STAR,
-        '</td><td>', sys.format_time(SUM_TIMER_WAIT),
-        '</td><td>', sys.format_time(MAX_TIMER_WAIT),
-        '</td><td>', sys.format_time(AVG_TIMER_WAIT),
+        '</td><td>', IFNULL(CONVERT(sys.format_time(SUM_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(sys.format_time(MAX_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(sys.format_time(AVG_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td><td>', ROUND(IFNULL(SUM_ROWS_SENT / NULLIF(COUNT_STAR, 0), 0)),
         '</td><td>', ROUND(IFNULL(SUM_ROWS_EXAMINED / NULLIF(COUNT_STAR, 0),0)),
         '</td></tr>'
-    )
+    ) USING utf8mb4) COLLATE utf8mb4_unicode_ci
     FROM performance_schema.events_statements_summary_by_digest stmts
     JOIN sys.x$ps_digest_95th_percentile_by_avg_us AS top_percentile
       ON ROUND(stmts.avg_timer_wait / 1000000) >= top_percentile.avg_us
@@ -235,7 +235,7 @@ ORDER BY AVG_TIMER_WAIT DESC
 LIMIT 10
 ) as y
     UNION ALL
-    SELECT '</table>'
+    SELECT CONVERT('</table>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 ) x;
 
 
@@ -1036,42 +1036,42 @@ SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_ta
 
 -- 11.1 Plugins info
 SELECT * FROM (
-    SELECT '<div class="sub-title">11.1 Plugins Info</div><table><tr><th>Name</th><th>Status</th><th>Type</th><th>Library</th><th>License</th></tr>'
+    SELECT CONVERT('<div class="sub-title">11.1 Plugins Info</div><table><tr><th>Name</th><th>Status</th><th>Type</th><th>Library</th><th>License</th></tr>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
     
     UNION ALL
 
-    SELECT CONCAT(
-        '<tr><td>', IFNULL(CONVERT(Name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', IFNULL(CONVERT(Status USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', IFNULL(CONVERT(Type USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', IFNULL(CONVERT(Library USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', IFNULL(CONVERT(License USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+    SELECT CONVERT(CONCAT(
+        '<tr><td>', IFNULL(CONVERT(PLUGIN_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_STATUS USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_TYPE USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_LIBRARY USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>', IFNULL(CONVERT(PLUGIN_LICENSE USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td></tr>'
-    )
+    ) USING utf8mb4) COLLATE utf8mb4_unicode_ci
     FROM (
-        SELECT Name, Status, Type, Library, License
+        SELECT PLUGIN_NAME, PLUGIN_STATUS, PLUGIN_TYPE, PLUGIN_LIBRARY, PLUGIN_LICENSE
         FROM information_schema.PLUGINS
-        ORDER BY Name
+        ORDER BY PLUGIN_NAME
     ) p
 
     UNION ALL
-    SELECT '</table>'
+    SELECT CONVERT('</table>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 ) x;
 
 
 -- 11.2 Components Info
 
 SELECT * FROM (
-    SELECT '<div class="sub-title">11.2 Components Info</div><table><tr><th>component_id</th><th>component_group_id</th><th>component_urn</th></tr>'
+    SELECT CONVERT('<div class="sub-title">11.2 Components Info</div><table><tr><th>component_id</th><th>component_group_id</th><th>component_urn</th></tr>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
     
     UNION ALL
 
-    SELECT CONCAT(
+    SELECT CONVERT(CONCAT(
         '<tr><td>', component_id,
         '</td><td>', component_group_id,
         '</td><td>', IFNULL(CONVERT(component_urn USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
         '</td></tr>'
-    )
+    ) USING utf8mb4) COLLATE utf8mb4_unicode_ci
     FROM (
         SELECT component_id, component_group_id, component_urn
         FROM mysql.component
@@ -1079,7 +1079,7 @@ SELECT * FROM (
     ) c
 
     UNION ALL
-    SELECT '</table>'
+    SELECT CONVERT('</table>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
 ) x;
 
 
