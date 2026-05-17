@@ -25,7 +25,7 @@ SELECT '<div class="card"><details open id="section_host"><summary><h2 id="main_
 
 -- 1.1 Host Summary Overview (sys.x$host_summary)
 SELECT * FROM (
-    SELECT '<div id="h_1" class="sub-title">1.1 Host Summary Overview</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary` ORDER BY x$host_summary.statement_latency DESC</pre><table><tr><th>Host</th><th>Statements</th><th>Statement Latency</th><th>Statement Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Connections</th><th>Total Connections</th><th>Unique Users</th><th>Current Memory</th><th>Total Memory Allocated</th></tr>'
+    SELECT '<div id="h_1" class="sub-title">1.1 Host Summary Overview</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$host_summary` ORDER BY x$host_summary.statement_latency DESC</pre><table><tr><th>Host</th><th>Statements</th><th>Statement Latency</th><th>Statement Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Connections</th><th>Total Connections</th><th>Unique Users</th><th>Current Memory</th><th>Total Memory Allocated</th></tr>'
 
     UNION ALL
 
@@ -56,7 +56,7 @@ SELECT * FROM (
 
 -- 1.2 Host Summary by File IO (sys.x$host_summary_by_file_io)
 SELECT * FROM (
-    SELECT '<div id="h_2" class="sub-title">1.2 Host Summary by File IO</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_file_io` ORDER BY x$host_summary_by_file_io.io_latency DESC</pre><table><tr><th>Host</th><th>IOs</th><th>IO Latency</th></tr>'
+    SELECT '<div id="h_2" class="sub-title">1.2 Host Summary by File IO</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$host_summary_by_file_io` ORDER BY x$host_summary_by_file_io.io_latency DESC</pre><table><tr><th>Host</th><th>IOs</th><th>IO Latency</th></tr>'
 
     UNION ALL
 
@@ -78,7 +78,7 @@ SELECT * FROM (
 
 -- 1.3 Host Summary by File IO Type (sys.x$host_summary_by_file_io_type)
 SELECT * FROM (
-    SELECT '<div id="h_3" class="sub-title">1.3 Host Summary by File IO Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_file_io_type` ORDER BY x$host_summary_by_file_io_type.host, x$host_summary_by_file_io_type.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Max Latency</th></tr>'
+    SELECT '<div id="h_3" class="sub-title">1.3 Host Summary by File IO Type</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$host_summary_by_file_io_type` ORDER BY x$host_summary_by_file_io_type.host, x$host_summary_by_file_io_type.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Max Latency</th></tr>'
 
     UNION ALL
 
@@ -102,7 +102,7 @@ SELECT * FROM (
 
 -- 1.4 Host Summary by Stages (sys.x$host_summary_by_stages)
 SELECT * FROM (
-    SELECT '<div id="h_4" class="sub-title">1.4 Host Summary by Stages</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_stages` ORDER BY x$host_summary_by_stages.host, x$host_summary_by_stages.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
+    SELECT '<div id="h_4" class="sub-title">1.4 Host Summary by Stages</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$host_summary_by_stages` ORDER BY x$host_summary_by_stages.host, x$host_summary_by_stages.total_latency DESC</pre><table><tr><th>Host</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
 
     UNION ALL
 
@@ -126,7 +126,7 @@ SELECT * FROM (
 
 -- 1.5 Host Summary by Statement Latency (sys.x$host_summary_by_statement_latency)
 SELECT * FROM (
-    SELECT '<div id="h_5" class="sub-title">1.5 Host Summary by Statement Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_statement_latency` ORDER BY x$host_summary_by_statement_latency.total_latency DESC</pre><table><tr><th>Host</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+    SELECT '<div id="h_5" class="sub-title">1.5 Host Summary by Statement Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$host_summary_by_statement_latency` ORDER BY x$host_summary_by_statement_latency.total_latency DESC</pre><table><tr><th>Host</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
@@ -155,7 +155,7 @@ SELECT * FROM (
 
 -- 1.6 Host Summary by Statement Type (sys.x$host_summary_by_statement_type)
 SELECT * FROM (
-    SELECT '<div id="h_6" class="sub-title">1.6 Host Summary by Statement Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$host_summary_by_statement_type` ORDER BY x$host_summary_by_statement_type.host, x$host_summary_by_statement_type.total_latency DESC</pre><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+    SELECT '<div id="h_6" class="sub-title">1.6 Host Summary by Statement Type</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$host_summary_by_statement_type` ORDER BY x$host_summary_by_statement_type.host, x$host_summary_by_statement_type.total_latency DESC</pre><table><tr><th>Host</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
@@ -190,7 +190,7 @@ SELECT '<div class="card"><details open id="section_io"><summary><h2 id="main_io
 
 -- 2.1 IO by Thread by Latency (sys.x$io_by_thread_by_latency)
 SELECT * FROM (
-    SELECT '<div id="io_1" class="sub-title">2.1 IO by Thread by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_by_thread_by_latency` ORDER BY x$io_by_thread_by_latency.total_latency DESC</pre><table><tr><th>User</th><th>Total</th><th>Total Latency</th><th>Min Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Thread ID</th><th>Processlist ID</th></tr>'
+    SELECT '<div id="io_1" class="sub-title">2.1 IO by Thread by Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$io_by_thread_by_latency` ORDER BY x$io_by_thread_by_latency.total_latency DESC</pre><table><tr><th>User</th><th>Total</th><th>Total Latency</th><th>Min Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Thread ID</th><th>Processlist ID</th></tr>'
 
     UNION ALL
 
@@ -217,7 +217,7 @@ SELECT * FROM (
 
 -- 2.2 IO Global by File by Bytes (sys.x$io_global_by_file_by_bytes)
 SELECT * FROM (
-    SELECT '<div id="io_2" class="sub-title">2.2 IO Global by File by Bytes</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_file_by_bytes` ORDER BY x$io_global_by_file_by_bytes.total DESC</pre><table><tr><th>File</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Write</th><th>Total</th><th>Write Pct</th></tr>'
+    SELECT '<div id="io_2" class="sub-title">2.2 IO Global by File by Bytes</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$io_global_by_file_by_bytes` ORDER BY x$io_global_by_file_by_bytes.total DESC</pre><table><tr><th>File</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Write</th><th>Total</th><th>Write Pct</th></tr>'
 
     UNION ALL
 
@@ -245,7 +245,7 @@ SELECT * FROM (
 
 -- 2.3 IO Global by File by Latency (sys.x$io_global_by_file_by_latency)
 SELECT * FROM (
-    SELECT '<div id="io_3" class="sub-title">2.3 IO Global by File by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_file_by_latency` ORDER BY x$io_global_by_file_by_latency.total_latency DESC</pre><table><tr><th>File</th><th>Total</th><th>Total Latency</th><th>Count Read</th><th>Read Latency</th><th>Count Write</th><th>Write Latency</th><th>Count Misc</th><th>Misc Latency</th></tr>'
+    SELECT '<div id="io_3" class="sub-title">2.3 IO Global by File by Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$io_global_by_file_by_latency` ORDER BY x$io_global_by_file_by_latency.total_latency DESC</pre><table><tr><th>File</th><th>Total</th><th>Total Latency</th><th>Count Read</th><th>Read Latency</th><th>Count Write</th><th>Write Latency</th><th>Count Misc</th><th>Misc Latency</th></tr>'
 
     UNION ALL
 
@@ -273,7 +273,7 @@ SELECT * FROM (
 
 -- 2.4 IO Global by Wait by Bytes (sys.x$io_global_by_wait_by_bytes)
 SELECT * FROM (
-    SELECT '<div id="io_4" class="sub-title">2.4 IO Global by Wait by Bytes</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_wait_by_bytes` ORDER BY x$io_global_by_wait_by_bytes.total_requested DESC</pre><table><tr><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Min Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Written</th><th>Total Requested</th></tr>'
+    SELECT '<div id="io_4" class="sub-title">2.4 IO Global by Wait by Bytes</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$io_global_by_wait_by_bytes` ORDER BY x$io_global_by_wait_by_bytes.total_requested DESC</pre><table><tr><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Min Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Written</th><th>Total Requested</th></tr>'
 
     UNION ALL
 
@@ -305,7 +305,7 @@ SELECT * FROM (
 
 -- 2.5 IO Global by Wait by Latency (sys.x$io_global_by_wait_by_latency)
 SELECT * FROM (
-    SELECT '<div id="io_5" class="sub-title">2.5 IO Global by Wait by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_wait_by_latency` ORDER BY x$io_global_by_wait_by_latency.total_latency DESC</pre><table><tr><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Read Latency</th><th>Write Latency</th><th>Misc Latency</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Written</th></tr>'
+    SELECT '<div id="io_5" class="sub-title">2.5 IO Global by Wait by Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$io_global_by_wait_by_latency` ORDER BY x$io_global_by_wait_by_latency.total_latency DESC</pre><table><tr><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Read Latency</th><th>Write Latency</th><th>Misc Latency</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Written</th></tr>'
 
     UNION ALL
 
@@ -343,7 +343,7 @@ SELECT '<div class="card"><details open id="section_user"><summary><h2 id="main_
 
 -- 3.1 User Summary Overview (sys.x$user_summary)
 SELECT * FROM (
-    SELECT '<div id="u_1" class="sub-title">3.1 User Summary Overview</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary` ORDER BY x$user_summary.statement_latency DESC</pre><table><tr><th>User</th><th>Statements</th><th>Statement Latency</th><th>Statement Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Connections</th><th>Total Connections</th><th>Unique Hosts</th><th>Current Memory</th><th>Total Memory Allocated</th></tr>'
+    SELECT '<div id="u_1" class="sub-title">3.1 User Summary Overview</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$user_summary` ORDER BY x$user_summary.statement_latency DESC</pre><table><tr><th>User</th><th>Statements</th><th>Statement Latency</th><th>Statement Avg Latency</th><th>Table Scans</th><th>File IOs</th><th>File IO Latency</th><th>Current Connections</th><th>Total Connections</th><th>Unique Hosts</th><th>Current Memory</th><th>Total Memory Allocated</th></tr>'
 
     UNION ALL
 
@@ -374,7 +374,7 @@ SELECT * FROM (
 
 -- 3.2 User Summary by File IO (sys.x$user_summary_by_file_io)
 SELECT * FROM (
-    SELECT '<div id="u_2" class="sub-title">3.2 User Summary by File IO</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_file_io` ORDER BY x$user_summary_by_file_io.io_latency DESC</pre><table><tr><th>User</th><th>IOs</th><th>IO Latency</th></tr>'
+    SELECT '<div id="u_2" class="sub-title">3.2 User Summary by File IO</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$user_summary_by_file_io` ORDER BY x$user_summary_by_file_io.io_latency DESC</pre><table><tr><th>User</th><th>IOs</th><th>IO Latency</th></tr>'
 
     UNION ALL
 
@@ -396,7 +396,7 @@ SELECT * FROM (
 
 -- 3.3 User Summary by File IO Type (sys.x$user_summary_by_file_io_type)
 SELECT * FROM (
-    SELECT '<div id="u_3" class="sub-title">3.3 User Summary by File IO Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_file_io_type` ORDER BY x$user_summary_by_file_io_type.user, x$user_summary_by_file_io_type.latency DESC</pre><table><tr><th>User</th><th>Event Name</th><th>Total</th><th>Latency</th><th>Max Latency</th></tr>'
+    SELECT '<div id="u_3" class="sub-title">3.3 User Summary by File IO Type</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$user_summary_by_file_io_type` ORDER BY x$user_summary_by_file_io_type.user, x$user_summary_by_file_io_type.latency DESC</pre><table><tr><th>User</th><th>Event Name</th><th>Total</th><th>Latency</th><th>Max Latency</th></tr>'
 
     UNION ALL
 
@@ -420,7 +420,7 @@ SELECT * FROM (
 
 -- 3.4 User Summary by Stages (sys.x$user_summary_by_stages)
 SELECT * FROM (
-    SELECT '<div id="u_4" class="sub-title">3.4 User Summary by Stages</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_stages` ORDER BY x$user_summary_by_stages.user, x$user_summary_by_stages.total_latency DESC</pre><table><tr><th>User</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
+    SELECT '<div id="u_4" class="sub-title">3.4 User Summary by Stages</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$user_summary_by_stages` ORDER BY x$user_summary_by_stages.user, x$user_summary_by_stages.total_latency DESC</pre><table><tr><th>User</th><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th></tr>'
 
     UNION ALL
 
@@ -444,7 +444,7 @@ SELECT * FROM (
 
 -- 3.5 User Summary by Statement Latency (sys.x$user_summary_by_statement_latency)
 SELECT * FROM (
-    SELECT '<div id="u_5" class="sub-title">3.5 User Summary by Statement Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_statement_latency` ORDER BY x$user_summary_by_statement_latency.total_latency DESC</pre><table><tr><th>User</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+    SELECT '<div id="u_5" class="sub-title">3.5 User Summary by Statement Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$user_summary_by_statement_latency` ORDER BY x$user_summary_by_statement_latency.total_latency DESC</pre><table><tr><th>User</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
@@ -473,7 +473,7 @@ SELECT * FROM (
 
 -- 3.6 User Summary by Statement Type (sys.x$user_summary_by_statement_type)
 SELECT * FROM (
-    SELECT '<div id="u_6" class="sub-title">3.6 User Summary by Statement Type</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$user_summary_by_statement_type` ORDER BY x$user_summary_by_statement_type.user, x$user_summary_by_statement_type.total_latency DESC</pre><table><tr><th>User</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
+    SELECT '<div id="u_6" class="sub-title">3.6 User Summary by Statement Type</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$user_summary_by_statement_type` ORDER BY x$user_summary_by_statement_type.user, x$user_summary_by_statement_type.total_latency DESC</pre><table><tr><th>User</th><th>Statement</th><th>Total</th><th>Total Latency</th><th>Max Latency</th><th>Lock Latency</th><th>CPU Latency</th><th>Rows Sent</th><th>Rows Examined</th><th>Rows Affected</th><th>Full Scans</th></tr>'
 
     UNION ALL
 
@@ -510,7 +510,7 @@ SELECT '<div class="card"><details open id="section_memory"><summary><h2 id="mai
 
 -- 4.1 Memory by Host (sys.memory_by_host_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div id="m_1" class="sub-title">4.1 Memory by Host</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_by_host_by_current_bytes</pre><table><tr><th>host</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
+    SELECT '<div id="m_1" class="sub-title">4.1 Memory by Host</div><pre class="query-sql"># Query:\nselect * from sys.memory_by_host_by_current_bytes</pre><table><tr><th>host</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
 
     UNION ALL
 
@@ -531,7 +531,7 @@ SELECT * FROM (
 
 -- 4.2 Memory by Thread (sys.memory_by_thread_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div id="m_2" class="sub-title">4.2 Memory by Thread</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_by_thread_by_current_bytes</pre><table><tr><th>thread_id</th><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
+    SELECT '<div id="m_2" class="sub-title">4.2 Memory by Thread</div><pre class="query-sql"># Query:\nselect * from sys.memory_by_thread_by_current_bytes</pre><table><tr><th>thread_id</th><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
 
     UNION ALL
 
@@ -553,7 +553,7 @@ SELECT * FROM (
 
 -- 4.3 Memory by User (sys.memory_by_user_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div id="m_3" class="sub-title">4.3 Memory by User</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_by_user_by_current_bytes</pre><table><tr><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
+    SELECT '<div id="m_3" class="sub-title">4.3 Memory by User</div><pre class="query-sql"># Query:\nselect * from sys.memory_by_user_by_current_bytes</pre><table><tr><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
 
     UNION ALL
 
@@ -574,7 +574,7 @@ SELECT * FROM (
 
 -- 4.4 Memory Global Summary (sys.memory_global_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div id="m_4" class="sub-title">4.4 Memory Global Summary</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_global_by_current_bytes</pre><table><tr><th>event_name</th><th>current_count</th><th>current_alloc</th><th>current_avg_alloc</th><th>high_count</th><th>high_alloc</th><th>high_avg_alloc</th></tr>'
+    SELECT '<div id="m_4" class="sub-title">4.4 Memory Global Summary</div><pre class="query-sql"># Query:\nselect * from sys.memory_global_by_current_bytes</pre><table><tr><th>event_name</th><th>current_count</th><th>current_alloc</th><th>current_avg_alloc</th><th>high_count</th><th>high_alloc</th><th>high_avg_alloc</th></tr>'
 
     UNION ALL
 
@@ -603,7 +603,7 @@ SELECT '<div class="card"><details open id="section_wait"><summary><h2 id="main_
 
 -- 5.1 Waits Global by Latency (sys.x$waits_global_by_latency)
 SELECT * FROM (
-    SELECT '<div id="w_1" class="sub-title">5.1 Waits Global by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$waits_global_by_latency` ORDER BY x$waits_global_by_latency.total_latency DESC</pre><table><tr><th>events</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+    SELECT '<div id="w_1" class="sub-title">5.1 Waits Global by Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$waits_global_by_latency` ORDER BY x$waits_global_by_latency.total_latency DESC</pre><table><tr><th>events</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
 
     UNION ALL
 
@@ -627,7 +627,7 @@ SELECT * FROM (
 
 -- 5.2 Waits by User by Latency (sys.x$waits_by_user_by_latency)
 SELECT * FROM (
-    SELECT '<div id="w_2" class="sub-title">5.2 Waits by User by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$waits_by_user_by_latency` ORDER BY x$waits_by_user_by_latency.user, x$waits_by_user_by_latency.total_latency DESC</pre><table><tr><th>user</th><th>event</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+    SELECT '<div id="w_2" class="sub-title">5.2 Waits by User by Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$waits_by_user_by_latency` ORDER BY x$waits_by_user_by_latency.user, x$waits_by_user_by_latency.total_latency DESC</pre><table><tr><th>user</th><th>event</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
 
     UNION ALL
 
@@ -652,7 +652,7 @@ SELECT * FROM (
 
 -- 5.3 Waits by Host by Latency (sys.x$waits_by_host_by_latency)
 SELECT * FROM (
-    SELECT '<div id="w_3" class="sub-title">5.3 Waits by Host by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$waits_by_host_by_latency` ORDER BY x$waits_by_host_by_latency.host, x$waits_by_host_by_latency.total_latency DESC</pre><table><tr><th>host</th><th>event</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+    SELECT '<div id="w_3" class="sub-title">5.3 Waits by Host by Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$waits_by_host_by_latency` ORDER BY x$waits_by_host_by_latency.host, x$waits_by_host_by_latency.total_latency DESC</pre><table><tr><th>host</th><th>event</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
 
     UNION ALL
 
@@ -677,7 +677,7 @@ SELECT * FROM (
 
 -- 5.4 Wait Classes Global by Latency (sys.x$wait_classes_global_by_latency)
 SELECT * FROM (
-    SELECT '<div id="w_4" class="sub-title">5.4 Wait Classes Global by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$wait_classes_global_by_latency` ORDER BY x$wait_classes_global_by_latency.total_latency DESC</pre><table><tr><th>event_class</th><th>total</th><th>total_latency</th><th>min_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+    SELECT '<div id="w_4" class="sub-title">5.4 Wait Classes Global by Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$wait_classes_global_by_latency` ORDER BY x$wait_classes_global_by_latency.total_latency DESC</pre><table><tr><th>event_class</th><th>total</th><th>total_latency</th><th>min_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
 
     UNION ALL
 
@@ -702,7 +702,7 @@ SELECT * FROM (
 
 -- 5.5 Wait Classes Global by Avg Latency (sys.x$wait_classes_global_by_avg_latency)
 SELECT * FROM (
-    SELECT '<div id="w_5" class="sub-title">5.5 Wait Classes Global by Avg Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$wait_classes_global_by_avg_latency` ORDER BY IFNULL(x$wait_classes_global_by_avg_latency.total_latency / NULLIF(x$wait_classes_global_by_avg_latency.total, 0), 0) DESC</pre><table><tr><th>event_class</th><th>total</th><th>total_latency</th><th>min_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+    SELECT '<div id="w_5" class="sub-title">5.5 Wait Classes Global by Avg Latency</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$wait_classes_global_by_avg_latency` ORDER BY IFNULL(x$wait_classes_global_by_avg_latency.total_latency / NULLIF(x$wait_classes_global_by_avg_latency.total, 0), 0) DESC</pre><table><tr><th>event_class</th><th>total</th><th>total_latency</th><th>min_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
 
     UNION ALL
 
@@ -865,7 +865,7 @@ SELECT '<div class="card"><details open id="section_index"><summary><h2 id="main
 
 -- 6.1 Schema Index Statistics (sys.x$schema_index_statistics)
 SELECT * FROM (
-    SELECT '<div id="idx_1" class="sub-title">6.1 Schema Index Statistics</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$schema_index_statistics` WHERE table_schema not in (''mysql'',''sys'',''performance_schema'',''information_schema'') ORDER BY (x$schema_index_statistics.select_latency+x$schema_index_statistics.insert_latency+x$schema_index_statistics.update_latency+x$schema_index_statistics.delete_latency) DESC</pre><table><tr><th>table_schema</th><th>table_name</th><th>index_name</th><th>rows_selected</th><th>select_latency</th><th>rows_inserted</th><th>insert_latency</th><th>rows_updated</th><th>update_latency</th><th>rows_deleted</th><th>delete_latency</th></tr>'
+    SELECT '<div id="idx_1" class="sub-title">6.1 Schema Index Statistics</div><pre class="query-sql"># Query:\nSELECT * FROM `sys`.`x$schema_index_statistics` WHERE table_schema not in (''mysql'',''sys'',''performance_schema'',''information_schema'') ORDER BY (x$schema_index_statistics.select_latency+x$schema_index_statistics.insert_latency+x$schema_index_statistics.update_latency+x$schema_index_statistics.delete_latency) DESC</pre><table><tr><th>table_schema</th><th>table_name</th><th>index_name</th><th>rows_selected</th><th>select_latency</th><th>rows_inserted</th><th>insert_latency</th><th>rows_updated</th><th>update_latency</th><th>rows_deleted</th><th>delete_latency</th></tr>'
 
     UNION ALL
 
@@ -896,7 +896,7 @@ SELECT * FROM (
 
 -- 6.2 Schema Redundant Indexes (sys.schema_redundant_indexes)
 SELECT * FROM (
-    SELECT '<div id="idx_2" class="sub-title">6.2 Schema Redundant Indexes</div><pre class="query-sql"># Query:\n#\tselect * from sys.schema_redundant_indexes</pre><table><tr><th>table_schema</th><th>table_name</th><th>redundant_index_name</th><th>redundant_index_columns</th><th>redundant_index_non_unique</th><th>dominant_index_name</th><th>dominant_index_columns</th><th>dominant_index_non_unique</th><th>subpart_exists</th><th>sql_drop_index</th></tr>'
+    SELECT '<div id="idx_2" class="sub-title">6.2 Schema Redundant Indexes</div><pre class="query-sql"># Query:\nselect * from sys.schema_redundant_indexes</pre><table><tr><th>table_schema</th><th>table_name</th><th>redundant_index_name</th><th>redundant_index_columns</th><th>redundant_index_non_unique</th><th>dominant_index_name</th><th>dominant_index_columns</th><th>dominant_index_non_unique</th><th>subpart_exists</th><th>sql_drop_index</th></tr>'
 
     UNION ALL
 
@@ -921,7 +921,7 @@ SELECT * FROM (
 
 -- 6.3 Schema Unused Indexes (sys.schema_unused_indexes)
 SELECT * FROM (
-    SELECT '<div id="idx_3" class="sub-title">6.3 Schema Unused Indexes</div><pre class="query-sql"># Query:\n#\tSELECT * FROM sys.schema_unused_indexes where object_schema not in (''performance_schema'',''information_chema'',''mysql'',''sys'');</pre><table><tr><th>object_schema</th><th>object_name</th><th>index_name</th></tr>'
+    SELECT '<div id="idx_3" class="sub-title">6.3 Schema Unused Indexes</div><pre class="query-sql"># Query:\nSELECT * FROM sys.schema_unused_indexes where object_schema not in (''performance_schema'',''information_chema'',''mysql'',''sys'');</pre><table><tr><th>object_schema</th><th>object_name</th><th>index_name</th></tr>'
 
     UNION ALL
 
@@ -943,7 +943,7 @@ SELECT * FROM (
 
 -- 6.4 Low Selectivity Secondary Indexes (mysql.innodb_index_stats)
 SELECT * FROM (
-    SELECT '<div id="idx_4" class="sub-title">6.4 Low Selectivity Secondary Indexes</div><pre class="query-sql"># Query:\n#\tSELECT i.database_name AS db_name,i.table_name AS table_name,i.index_name AS index_name,i.stat_value AS def_Rows,\n#\t    t.n_rows AS total_rows,\n#\t    ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,\n#\t                        i.stat_value,\n#\t                        t.n_rows),\n#\t                    0.01))),\n#\t            2) AS sel_persent\n#\t FROM\n#\t    mysql.innodb_index_stats i\n#\t        INNER JOIN\n#\t    mysql.innodb_table_stats t ON i.database_name = t.database_name\n#\t        AND i.table_name = t.table_name\n#\t WHERE\n#\t    i.index_name != ''PRIMARY''\n#\t        AND i.stat_name LIKE ''%n_diff_pfx%''\n#\t        AND ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,\n#\t                        i.stat_value,\n#\t                        t.n_rows),\n#\t                    0.01))),\n#\t            2) < 0.1;</pre><table><tr><th>db_name</th><th>table_name</th><th>index_name</th><th>def_Rows</th><th>total_rows</th><th>sel_persent</th></tr>'
+    SELECT '<div id="idx_4" class="sub-title">6.4 Low Selectivity Secondary Indexes</div><pre class="query-sql"># Query:\nSELECT i.database_name AS db_name,i.table_name AS table_name,i.index_name AS index_name,i.stat_value AS def_Rows,\n    t.n_rows AS total_rows,\n    ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,\n                        i.stat_value,\n                        t.n_rows),\n                    0.01))),\n            2) AS sel_persent\n FROM\n    mysql.innodb_index_stats i\n        INNER JOIN\n    mysql.innodb_table_stats t ON i.database_name = t.database_name\n        AND i.table_name = t.table_name\n WHERE\n    i.index_name != ''PRIMARY''\n        AND i.stat_name LIKE ''%n_diff_pfx%''\n        AND ROUND(((i.stat_value / IFNULL(IF(t.n_rows < i.stat_value,\n                        i.stat_value,\n                        t.n_rows),\n                    0.01))),\n            2) < 0.1;</pre><table><tr><th>db_name</th><th>table_name</th><th>index_name</th><th>def_Rows</th><th>total_rows</th><th>sel_persent</th></tr>'
 
     UNION ALL
 
@@ -986,7 +986,7 @@ SELECT * FROM (
 
 -- 6.5 Tables Without Primary Key (information_schema.tables/statistics)
 SELECT * FROM (
-    SELECT '<div id="idx_5" class="sub-title">6.5 Tables Without Primary Key</div><pre class="query-sql"># Query:\n#\tSELECT t.table_schema, t.table_name, t.table_rows, t.engine, t.data_length, t.index_length \n#\t            FROM information_schema.tables t \n#\t              LEFT JOIN information_schema.statistics s on t.table_schema=s.table_schema and t.table_name=s.table_name and s.index_name=''PRIMARY'' \n#\t            WHERE s.index_name is NULL and t.table_type = ''BASE TABLE'' \n#\t                and t.table_schema not in (''performance_schema'', ''sys'', ''mysql'', ''information_schema'')</pre><table><tr><th>TABLE_SCHEMA</th><th>TABLE_NAME</th><th>TABLE_ROWS</th><th>ENGINE</th><th>DATA_LENGTH</th><th>INDEX_LENGTH</th></tr>'
+    SELECT '<div id="idx_5" class="sub-title">6.5 Tables Without Primary Key</div><pre class="query-sql"># Query:\nSELECT t.table_schema, t.table_name, t.table_rows, t.engine, t.data_length, t.index_length \n            FROM information_schema.tables t \n              LEFT JOIN information_schema.statistics s on t.table_schema=s.table_schema and t.table_name=s.table_name and s.index_name=''PRIMARY'' \n            WHERE s.index_name is NULL and t.table_type = ''BASE TABLE'' \n                and t.table_schema not in (''performance_schema'', ''sys'', ''mysql'', ''information_schema'')</pre><table><tr><th>TABLE_SCHEMA</th><th>TABLE_NAME</th><th>TABLE_ROWS</th><th>ENGINE</th><th>DATA_LENGTH</th><th>INDEX_LENGTH</th></tr>'
 
     UNION ALL
 
