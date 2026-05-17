@@ -17,7 +17,7 @@ details[open] summary{margin-bottom:20px;}
 SELECT CONCAT('<div class="card"><h1>MySQL Health Report</h1><div class="meta">Generated: ',DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),'</div><div class="meta">Version: v1.0.0 | Author: Rongping</div></div>');
 
 -- 3. Categorized Directory (Now with Main Section Links)
-SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_user" class="dir-group-label">III. User Summary</a><a href="#u_1">3.1 User Overview</a><a href="#u_2">3.2 File IO</a><a href="#u_3">3.3 File IO Type</a><a href="#u_4">3.4 Stages</a><a href="#u_5">3.5 Statement Latency</a><a href="#u_6">3.6 Statement Type</a></div><div class="dir-group"><a href="#section_system" class="dir-group-label">IV. Instance Health</a><a href="#health_info">Basic Health</a></div><div class="dir-group"><a href="#section_storage" class="dir-group-label">V. Storage & Objects</a><a href="#db_info">DB Capacity</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">VI. DB Tables Info</a><a href="#t_3">Top 20 Largest</a><a href="#t_5">Auto Inc</a><a href="#t_6">Full Scans</a><a href="#t_7">Table Stats</a></div></div></div>';
+SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_user" class="dir-group-label">III. User Summary</a><a href="#u_1">3.1 User Overview</a><a href="#u_2">3.2 File IO</a><a href="#u_3">3.3 File IO Type</a><a href="#u_4">3.4 Stages</a><a href="#u_5">3.5 Statement Latency</a><a href="#u_6">3.6 Statement Type</a></div><div class="dir-group"><a href="#section_memory" class="dir-group-label">IV. Memory Summary</a><a href="#m_1">4.1 Memory by Host</a><a href="#m_2">4.2 Memory by Thread</a><a href="#m_3">4.3 Memory by User</a><a href="#m_4">4.4 Memory Global</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">V. DB Tables Info</a><a href="#t_3">Top 20 Largest</a><a href="#t_5">Auto Inc</a><a href="#t_6">Full Scans</a><a href="#t_7">Table Stats</a></div></div></div>';
 
 
 -- 4. Main Section: Host Summary (Collapsible)
@@ -338,166 +338,6 @@ SELECT * FROM (
 
 SELECT '</details></div>';
 
--- 6. Main Section: System (Collapsible)
-SELECT '<div class="card"><details open id="section_system"><summary><h2 id="main_system">3. Instance Health</h2></summary>';
-    SELECT '<div id="health_info" class="sub-title">3.1 Basic Health Check</div><table><tr><th>Time</th><th>User</th><th>Port</th><th>Version</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',NOW(),'</td><td>',USER(),'</td><td>',@@port,'</td><td>',VERSION(),'</td></tr>') UNION ALL
-    SELECT '</table>';
-SELECT '</details></div>';
-
--- 7. Main Section: Storage (Collapsible)
-SELECT '<div class="card"><details open id="section_storage"><summary><h2 id="main_storage">4. Storage and Objects</h2></summary>';
-    SELECT '<div id="db_info" class="sub-title">4.1 Database Capacity</div><table><tr><th>Schema</th><th>Charset</th><th>Data(MB)</th></tr>' UNION ALL
-    SELECT CONCAT('<tr><td>',IFNULL(CONVERT(SCHEMA_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),'</td><td>',IFNULL(CONVERT(DEFAULT_CHARACTER_SET_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),'</td><td>',DataMB,'</td></tr>') FROM (SELECT a.SCHEMA_NAME, a.DEFAULT_CHARACTER_SET_NAME, SUM(TRUNCATE(IFNULL(data_length,0)/1024/1024,2)) AS DataMB FROM INFORMATION_SCHEMA.SCHEMATA a LEFT JOIN information_schema.tables b ON a.SCHEMA_NAME=b.TABLE_SCHEMA WHERE a.SCHEMA_NAME NOT IN ("mysql","information_schema","sys","performance_schema") GROUP BY 1,2) t UNION ALL
-    SELECT '</table>';
-SELECT '</details></div>';
-
-
-
-
-
-
--- 2. SQL Summary (Collapsible)
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">3. SQL Summary</h2></summary>';
-
--- 2.1 Top 95th Percentile Slow SQL (by Avg Time)
-    SELECT * FROM (
-
-    SELECT CONVERT('<div class="sub-title">12.1 Top 95th Percentile Slow SQL (by Avg Time)</div><table><tr><th>QUERY</th><th>SCHEMA_NAME</th><th>fullscan</th><th>COUNT_STAR</th><th>Total_time</th><th>Max_time</th><th>Avg_time</th><th>avg_rows</th><th>avg_scan_rows</th></tr>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
-
-    UNION ALL
-select * from (
-    SELECT CONVERT(CONCAT(
-        '<tr><td>',
-            REPLACE(CONVERT(sys.format_statement(DIGEST_TEXT) USING utf8mb4),'<','&lt;'),
-        '</td><td>', IFNULL(CONVERT(SCHEMA_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',
-            IF(SUM_NO_GOOD_INDEX_USED > 0 OR SUM_NO_INDEX_USED > 0,'*',''),
-        '</td><td>', COUNT_STAR,
-        '</td><td>', IFNULL(CONVERT(sys.format_time(SUM_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', IFNULL(CONVERT(sys.format_time(MAX_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', IFNULL(CONVERT(sys.format_time(AVG_TIMER_WAIT) USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', ROUND(IFNULL(SUM_ROWS_SENT / NULLIF(COUNT_STAR, 0), 0)),
-        '</td><td>', ROUND(IFNULL(SUM_ROWS_EXAMINED / NULLIF(COUNT_STAR, 0),0)),
-        '</td></tr>'
-    ) USING utf8mb4) COLLATE utf8mb4_unicode_ci
-    FROM performance_schema.events_statements_summary_by_digest stmts
-    JOIN sys.x$ps_digest_95th_percentile_by_avg_us AS top_percentile
-      ON ROUND(stmts.avg_timer_wait / 1000000) >= top_percentile.avg_us
-ORDER BY AVG_TIMER_WAIT DESC
-LIMIT 10
-) as y
-    UNION ALL
-    SELECT CONVERT('</table>' USING utf8mb4) COLLATE utf8mb4_unicode_ci
-) x;
-
-
-
-
-
-
-
-SELECT '</details></div>';
-
-
-
-
-
-
-
--- 3. Database Variables (Collapsible)
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">3. Database Variables</h2></summary>';
-
--- 3.1 Global Variables Configuration
-SELECT * FROM (
-    SELECT '<div id="cfg_1" class="sub-title">3.1 Global Configuration Variables</div><table><tr><th>Variable Name</th><th>Value</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',VARIABLE_NAME,
-        '</td><td>',IFNULL(VARIABLE_VALUE,''),
-        '</td></tr>'
-    )
-    FROM (
-        SELECT VARIABLE_NAME, VARIABLE_VALUE
-        FROM performance_schema.global_variables
-        WHERE VARIABLE_NAME IN (
-        'version','datadir','sql_mode','gtid_mode','enforce_gtid_consistency','time_zone','transaction_isolation',
-        'autocommit','innodb_lock_wait_timeout','max_connections','max_user_connections','slow_query_log','log_output',
-        'slow_query_log_file','long_query_time','log_queries_not_using_indexes','log_throttle_queries_not_using_indexes',
-        'sort_buffer_size','pid_file','log_error','lower_case_table_names','secure_file_priv',
-        'innodb_buffer_pool_size','innodb_flush_log_at_trx_commit','sync_binlog','innodb_io_capacity',
-        'query_cache_type','query_cache_size','max_connect_errors','innodb_file_per_table',
-        'innodb_log_file_size','innodb_log_files_in_group','innodb_autoinc_lock_mode','event_scheduler',
-        'max_allowed_packet','lock_wait_timeout','plugin_dir','open_files_limit','join_buffer_size',
-        'innodb_log_buffer_size','innodb_adaptive_hash_index','binlog_format','bind_address',
-        'log_bin_basename','innodb_page_size','innodb_redo_log_capacity','key_buffer_size',
-        'tmp_table_size','read_buffer_size','read_rnd_buffer_size','binlog_cache_size',
-        'innodb_purge_threads','innodb_ddl_threads','innodb_ddl_buffer_size','log_bin',
-        'wait_timeout','interactive_timeout','innodb_flush_neighbors',
-        'auto_increment_increment','auto_increment_offset','innodb_flush_method',
-        'explicit_defaults_for_timestamp','innodb_print_all_deadlocks',
-        'innodb_write_io_threads','innodb_read_io_threads','innodb_parallel_read_threads'
-        )
-        ORDER BY VARIABLE_NAME
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 3.2 Replication Related Global Variables
-SELECT * FROM (
-    SELECT '<div id="cfg_repl" class="sub-title">3.2 Replication Related Variables</div><table><tr><th>Variable Name</th><th>Value</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',VARIABLE_NAME,
-        '</td><td>',IFNULL(VARIABLE_VALUE,''),
-        '</td></tr>'
-    )
-    FROM (
-        SELECT VARIABLE_NAME, VARIABLE_VALUE
-        FROM performance_schema.global_variables
-        WHERE VARIABLE_NAME IN (
-        'server_id',
-        'server_uuid',
-        'log_bin',
-        'log_bin_basename',
-        'log_bin_index',
-        'sql_log_bin',
-        'log_slave_updates',
-        'read_only',
-        'super_read_only',
-        'slave_skip_errors',
-        'slave_max_allowed_packet',
-        'sql_slave_skip_counter',
-        'slave_exec_mode',
-        'relay_log_recovery',
-        'relay_log_info_repository',
-        'binlog_format',
-        'expire_logs_days',
-        'binlog_expire_logs_seconds',
-        'max_binlog_size',
-        'binlog_rows_query_log_events',
-        'event_scheduler'
-        )
-        ORDER BY VARIABLE_NAME
-    ) t1
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
-SELECT '</details></div>';
-
-
-
-
 -- 3. User Summary
 SELECT '<div class="card"><details open id="section_user"><summary><h2 id="main_user">3. User Summary</h2></summary>';
 
@@ -665,120 +505,94 @@ SELECT '</details></div>';
 
 
 
--- 6. Memory Info
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">6. Memory Info</h2></summary>';
+-- 4. Memory Summary
+SELECT '<div class="card"><details open id="section_memory"><summary><h2 id="main_memory">4. Memory Summary</h2></summary>';
 
--- 6.1 memory_by_host_by_current_bytes
-
+-- 4.1 Memory by Host (sys.memory_by_host_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div id="mem_host" class="sub-title">6.1 Memory by Host</div><table><tr><th>host</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
+    SELECT '<div id="m_1" class="sub-title">4.1 Memory by Host</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_by_host_by_current_bytes</pre><table><tr><th>host</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',
-        IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',current_count_used,
-        '</td><td>',current_allocated,
-        '</td><td>',current_avg_alloc,
-        '</td><td>',current_max_alloc,
-        '</td><td>',total_allocated,
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(current_count_used,0),
+        '</td><td>',IFNULL(current_allocated,''),
+        '</td><td>',IFNULL(current_avg_alloc,''),
+        '</td><td>',IFNULL(current_max_alloc,''),
+        '</td><td>',IFNULL(total_allocated,''),
         '</td></tr>'
     )
     FROM sys.memory_by_host_by_current_bytes
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
 
-
--- 6.2 memory_by_thread_by_current_bytes
-
+-- 4.2 Memory by Thread (sys.memory_by_thread_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div class="sub-title">6.2 Memory by Thread</div><table><tr><th>thread_id</th><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
+    SELECT '<div id="m_2" class="sub-title">4.2 Memory by Thread</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_by_thread_by_current_bytes</pre><table><tr><th>thread_id</th><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',thread_id,
-        '</td><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',current_count_used,
-        '</td><td>',current_allocated,
-        '</td><td>',current_avg_alloc,
-        '</td><td>',current_max_alloc,
-        '</td><td>',total_allocated,
+        '<tr><td>',IFNULL(thread_id,''),
+        '</td><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(current_count_used,0),
+        '</td><td>',IFNULL(current_allocated,''),
+        '</td><td>',IFNULL(current_avg_alloc,''),
+        '</td><td>',IFNULL(current_max_alloc,''),
+        '</td><td>',IFNULL(total_allocated,''),
         '</td></tr>'
     )
-    FROM (
-        SELECT *
-        FROM sys.memory_by_thread_by_current_bytes
-        ORDER BY thread_id DESC
-    ) t
+    FROM sys.memory_by_thread_by_current_bytes
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
 
-
--- 6.3 memory_by_user_by_current_bytes
-
+-- 4.3 Memory by User (sys.memory_by_user_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div id="mem_user" class="sub-title">6.3 Memory by User (Current)</div><table><tr><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
+    SELECT '<div id="m_3" class="sub-title">4.3 Memory by User</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_by_user_by_current_bytes</pre><table><tr><th>user</th><th>current_count_used</th><th>current_allocated</th><th>current_avg_alloc</th><th>current_max_alloc</th><th>total_allocated</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',current_count_used,
-        '</td><td>',current_allocated,
-        '</td><td>',current_avg_alloc,
-        '</td><td>',current_max_alloc,
-        '</td><td>',total_allocated,
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(current_count_used,0),
+        '</td><td>',IFNULL(current_allocated,''),
+        '</td><td>',IFNULL(current_avg_alloc,''),
+        '</td><td>',IFNULL(current_max_alloc,''),
+        '</td><td>',IFNULL(total_allocated,''),
         '</td></tr>'
     )
-    FROM (
-        SELECT *
-        FROM sys.memory_by_user_by_current_bytes
-        ORDER BY current_allocated DESC
-    ) t
+    FROM sys.memory_by_user_by_current_bytes
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
 
-
--- 6.4 memory_global_by_current_bytes
-
+-- 4.4 Memory Global Summary (sys.memory_global_by_current_bytes)
 SELECT * FROM (
-    SELECT '<div id="mem_global" class="sub-title">6.4 Memory Global Summary (Current)</div><table><tr><th>event_name</th><th>current_count</th><th>current_alloc</th><th>current_avg_alloc</th><th>high_count</th><th>high_alloc</th><th>high_avg_alloc</th></tr>'
+    SELECT '<div id="m_4" class="sub-title">4.4 Memory Global Summary</div><pre class="query-sql"># Query:\n#\tselect * from sys.memory_global_by_current_bytes</pre><table><tr><th>event_name</th><th>current_count</th><th>current_alloc</th><th>current_avg_alloc</th><th>high_count</th><th>high_alloc</th><th>high_avg_alloc</th></tr>'
 
     UNION ALL
 
     SELECT CONCAT(
         '<tr><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',current_count,
-        '</td><td>',current_alloc,
-        '</td><td>',current_avg_alloc,
-        '</td><td>',high_count,
-        '</td><td>',high_alloc,
-        '</td><td>',high_avg_alloc,
+        '</td><td>',FORMAT(current_count,0),
+        '</td><td>',IFNULL(current_alloc,''),
+        '</td><td>',IFNULL(current_avg_alloc,''),
+        '</td><td>',FORMAT(high_count,0),
+        '</td><td>',IFNULL(high_alloc,''),
+        '</td><td>',IFNULL(high_avg_alloc,''),
         '</td></tr>'
     )
-    FROM (
-        SELECT *
-        FROM sys.memory_global_by_current_bytes
-        ORDER BY current_alloc DESC
-    ) t
+    FROM sys.memory_global_by_current_bytes
 
     UNION ALL
-
     SELECT '</table>'
 ) x;
-
-
 
 SELECT '</details></div>';
 
