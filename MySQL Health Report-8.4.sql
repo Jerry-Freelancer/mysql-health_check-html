@@ -17,7 +17,7 @@ details[open] summary{margin-bottom:20px;}
 SELECT CONCAT('<div class="card"><h1>MySQL Health Report</h1><div class="meta">Generated: ',DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),'</div><div class="meta">Version: v1.0.0 | Author: Rongping</div></div>');
 
 -- 3. Categorized Directory (Now with Main Section Links)
-SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_user" class="dir-group-label">III. User Summary</a><a href="#u_1">3.1 User Overview</a><a href="#u_2">3.2 File IO</a><a href="#u_3">3.3 File IO Type</a><a href="#u_4">3.4 Stages</a><a href="#u_5">3.5 Statement Latency</a><a href="#u_6">3.6 Statement Type</a></div><div class="dir-group"><a href="#section_memory" class="dir-group-label">IV. Memory Summary</a><a href="#m_1">4.1 Memory by Host</a><a href="#m_2">4.2 Memory by Thread</a><a href="#m_3">4.3 Memory by User</a><a href="#m_4">4.4 Memory Global</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">V. DB Tables Info</a><a href="#t_3">Top 20 Largest</a><a href="#t_5">Auto Inc</a><a href="#t_6">Full Scans</a><a href="#t_7">Table Stats</a></div></div></div>';
+SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_user" class="dir-group-label">III. User Summary</a><a href="#u_1">3.1 User Overview</a><a href="#u_2">3.2 File IO</a><a href="#u_3">3.3 File IO Type</a><a href="#u_4">3.4 Stages</a><a href="#u_5">3.5 Statement Latency</a><a href="#u_6">3.6 Statement Type</a></div><div class="dir-group"><a href="#section_memory" class="dir-group-label">IV. Memory Summary</a><a href="#m_1">4.1 Memory by Host</a><a href="#m_2">4.2 Memory by Thread</a><a href="#m_3">4.3 Memory by User</a><a href="#m_4">4.4 Memory Global</a></div><div class="dir-group"><a href="#section_wait" class="dir-group-label">V. Wait Summary</a><a href="#w_1">5.1 Global Latency</a><a href="#w_2">5.2 By User</a><a href="#w_3">5.3 By Host</a><a href="#w_4">5.4 Classes Latency</a><a href="#w_5">5.5 Classes Avg Latency</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">VI. DB Tables Info</a><a href="#t_3">Top 20 Largest</a><a href="#t_5">Auto Inc</a><a href="#t_6">Full Scans</a><a href="#t_7">Table Stats</a></div></div></div>';
 
 
 -- 4. Main Section: Host Summary (Collapsible)
@@ -598,129 +598,134 @@ SELECT '</details></div>';
 
 
 
--- 7. Wait Info
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">7. Wait Info</h2></summary>';
+-- 5. Wait Summary
+SELECT '<div class="card"><details open id="section_wait"><summary><h2 id="main_wait">5. Wait Summary</h2></summary>';
 
--- 7.1 Waits by Host
+-- 5.1 Waits Global by Latency (sys.x$waits_global_by_latency)
 SELECT * FROM (
-SELECT '<div class="sub-title">7.1 Waits by Host</div><table><tr><th>host</th><th>event</th><th>total</th><th>total_seconds</th><th>avg_ms</th><th>max_ms</th></tr>'
-UNION ALL
-SELECT CONCAT(
-'<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-'</td><td>',IFNULL(CONVERT(event USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-'</td><td>',total,
-'</td><td>',ROUND(total_latency/1000000000000,2),
-'</td><td>',ROUND(avg_latency/1000000000,2),
-'</td><td>',ROUND(max_latency/1000000000,2),
-'</td></tr>'
-)
-FROM (
-SELECT *
-FROM sys.x$waits_by_host_by_latency
-ORDER BY host, total_latency DESC
-) t
-UNION ALL
-SELECT '</table>'
+    SELECT '<div id="w_1" class="sub-title">5.1 Waits Global by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$waits_global_by_latency` ORDER BY x$waits_global_by_latency.total_latency DESC</pre><table><tr><th>events</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(events USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$waits_global_by_latency
+        ORDER BY total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
 ) x;
 
-
--- 7.2 Waits by User
+-- 5.2 Waits by User by Latency (sys.x$waits_by_user_by_latency)
 SELECT * FROM (
-SELECT '<div class="sub-title">7.2 Waits by User</div><table><tr><th>user</th><th>event</th><th>total</th><th>total_seconds</th><th>avg_ms</th><th>max_ms</th></tr>'
-UNION ALL
-SELECT CONCAT(
-'<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-'</td><td>',IFNULL(CONVERT(event USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-'</td><td>',total,
-'</td><td>',ROUND(total_latency/1000000000000,2),
-'</td><td>',ROUND(avg_latency/1000000000,2),
-'</td><td>',ROUND(max_latency/1000000000,2),
-'</td></tr>'
-)
-FROM (
-SELECT *
-FROM sys.x$waits_by_user_by_latency
-ORDER BY user, total_latency DESC
-) t
-UNION ALL
-SELECT '</table>'
+    SELECT '<div id="w_2" class="sub-title">5.2 Waits by User by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$waits_by_user_by_latency` ORDER BY x$waits_by_user_by_latency.user, x$waits_by_user_by_latency.total_latency DESC</pre><table><tr><th>user</th><th>event</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(event USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$waits_by_user_by_latency
+        ORDER BY `user`, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
 ) x;
 
-
--- 7.3 Waits Global by Latency
+-- 5.3 Waits by Host by Latency (sys.x$waits_by_host_by_latency)
 SELECT * FROM (
-SELECT '<div class="sub-title">7.3 Waits Global by Latency</div><table><tr><th>event</th><th>total</th><th>total_seconds</th><th>avg_ms</th><th>max_ms</th></tr>'
-UNION ALL
-SELECT CONCAT(
-'<tr><td>',events,
-'</td><td>',total,
-'</td><td>',ROUND(total_latency/1000000000000,2),
-'</td><td>',ROUND(avg_latency/1000000000,2),
-'</td><td>',ROUND(max_latency/1000000000,2),
-'</td></tr>'
-)
-FROM (
-SELECT *
-FROM sys.x$waits_global_by_latency
-ORDER BY total_latency DESC
-) t
-UNION ALL
-SELECT '</table>'
+    SELECT '<div id="w_3" class="sub-title">5.3 Waits by Host by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$waits_by_host_by_latency` ORDER BY x$waits_by_host_by_latency.host, x$waits_by_host_by_latency.total_latency DESC</pre><table><tr><th>host</th><th>event</th><th>total</th><th>total_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(host USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',IFNULL(CONVERT(event USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$waits_by_host_by_latency
+        ORDER BY host, total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
 ) x;
 
-
--- 7.4 Wait Classes Global by Latency
+-- 5.4 Wait Classes Global by Latency (sys.x$wait_classes_global_by_latency)
 SELECT * FROM (
-SELECT '<div class="sub-title">7.4 Wait Classes Global by Latency</div><table><tr><th>event_class</th><th>total</th><th>total_seconds</th><th>min_ms</th><th>avg_ms</th><th>max_ms</th></tr>'
-UNION ALL
-SELECT CONCAT(
-'<tr><td>',event_class,
-'</td><td>',total,
-'</td><td>',ROUND(total_latency/1000000000000,2),
-'</td><td>',ROUND(min_latency/1000000000,2),
-'</td><td>',ROUND(avg_latency/1000000000,2),
-'</td><td>',ROUND(max_latency/1000000000,2),
-'</td></tr>'
-)
-FROM (
-SELECT *
-FROM sys.x$wait_classes_global_by_latency
-ORDER BY total_latency DESC
-) t
-UNION ALL
-SELECT '</table>'
+    SELECT '<div id="w_4" class="sub-title">5.4 Wait Classes Global by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$wait_classes_global_by_latency` ORDER BY x$wait_classes_global_by_latency.total_latency DESC</pre><table><tr><th>event_class</th><th>total</th><th>total_latency</th><th>min_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(event_class USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(min_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$wait_classes_global_by_latency
+        ORDER BY total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
 ) x;
 
-
--- 7.5 Wait Classes Global by Avg Latency
+-- 5.5 Wait Classes Global by Avg Latency (sys.x$wait_classes_global_by_avg_latency)
 SELECT * FROM (
-SELECT '<div class="sub-title">7.5 Wait Classes Global by Avg Latency</div><table><tr><th>event_class</th><th>total</th><th>total_seconds</th><th>min_ms</th><th>avg_ms</th><th>max_ms</th></tr>'
-UNION ALL
-SELECT CONCAT(
-'<tr><td>',event_class,
-'</td><td>',total,
-'</td><td>',ROUND(total_latency/1000000000000,2),
-'</td><td>',ROUND(min_latency/1000000000,2),
-'</td><td>',ROUND(avg_latency/1000000000,2),
-'</td><td>',ROUND(max_latency/1000000000,2),
-'</td></tr>'
-)
-FROM (
-SELECT *
-FROM sys.x$wait_classes_global_by_avg_latency
-ORDER BY IFNULL(total_latency / NULLIF(total,0),0) DESC
-) t
-UNION ALL
-SELECT '</table>'
+    SELECT '<div id="w_5" class="sub-title">5.5 Wait Classes Global by Avg Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$wait_classes_global_by_avg_latency` ORDER BY IFNULL(x$wait_classes_global_by_avg_latency.total_latency / NULLIF(x$wait_classes_global_by_avg_latency.total, 0), 0) DESC</pre><table><tr><th>event_class</th><th>total</th><th>total_latency</th><th>min_latency</th><th>avg_latency</th><th>max_latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(event_class USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(min_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$wait_classes_global_by_avg_latency
+        ORDER BY IFNULL(total_latency / NULLIF(total,0),0) DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
 ) x;
-
-
 
 SELECT '</details></div>';
-
-
-
-
 
 
 
