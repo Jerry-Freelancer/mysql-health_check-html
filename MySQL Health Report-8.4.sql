@@ -17,7 +17,7 @@ details[open] summary{margin-bottom:20px;}
 SELECT CONCAT('<div class="card"><h1>MySQL Health Report</h1><div class="meta">Generated: ',DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),'</div><div class="meta">Version: v1.0.0 | Author: Rongping</div></div>');
 
 -- 3. Categorized Directory (Now with Main Section Links)
-SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_system" class="dir-group-label">II. Instance Health</a><a href="#health_info">2.1 Basic Health</a></div><div class="dir-group"><a href="#section_storage" class="dir-group-label">III. Storage & Objects</a><a href="#db_info">3.1 DB Capacity</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">IV. DB Tables Info</a><a href="#t_3">4.3 Top 20 Largest</a><a href="#t_5">4.5 Auto Inc</a><a href="#t_6">4.6 Full Scans</a><a href="#t_7">4.7 Table Stats</a></div></div></div>';
+SELECT '<div class="card directory"><h2>Navigation</h2><div class="directory-grid"><div class="dir-group"><a href="#section_host" class="dir-group-label">I. Host Summary</a><a href="#h_1">1.1 Host Summary Overview</a><a href="#h_2">1.2 File IO Overview</a><a href="#h_3">1.3 File IO Type</a><a href="#h_4">1.4 Stages</a><a href="#h_5">1.5 Statement Latency</a><a href="#h_6">1.6 Statement Type</a></div><div class="dir-group"><a href="#section_io" class="dir-group-label">II. IO Summary</a><a href="#io_1">2.1 IO by Thread Latency</a><a href="#io_2">2.2 File Bytes</a><a href="#io_3">2.3 File Latency</a><a href="#io_4">2.4 Wait Bytes</a><a href="#io_5">2.5 Wait Latency</a></div><div class="dir-group"><a href="#section_system" class="dir-group-label">III. Instance Health</a><a href="#health_info">3.1 Basic Health</a></div><div class="dir-group"><a href="#section_storage" class="dir-group-label">IV. Storage & Objects</a><a href="#db_info">4.1 DB Capacity</a></div><div class="dir-group"><a href="#sec_db_tables" class="dir-group-label">V. DB Tables Info</a><a href="#t_3">4.3 Top 20 Largest</a><a href="#t_5">4.5 Auto Inc</a><a href="#t_6">4.6 Full Scans</a><a href="#t_7">4.7 Table Stats</a></div></div></div>';
 
 
 -- 4. Main Section: Host Summary (Collapsible)
@@ -185,16 +185,169 @@ SELECT * FROM (
 
 SELECT '</details></div>';
 
--- 5. Main Section: System (Collapsible)
-SELECT '<div class="card"><details open id="section_system"><summary><h2 id="main_system">2. Instance Health</h2></summary>';
-    SELECT '<div id="health_info" class="sub-title">2.1 Basic Health Check</div><table><tr><th>Time</th><th>User</th><th>Port</th><th>Version</th></tr>' UNION ALL
+-- 5. Main Section: IO Summary (Collapsible)
+SELECT '<div class="card"><details open id="section_io"><summary><h2 id="main_io">2. IO Summary</h2></summary>';
+
+-- 2.1 IO by Thread by Latency (sys.x$io_by_thread_by_latency)
+SELECT * FROM (
+    SELECT '<div id="io_1" class="sub-title">2.1 IO by Thread by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_by_thread_by_latency` ORDER BY x$io_by_thread_by_latency.total_latency DESC</pre><table><tr><th>User</th><th>Total</th><th>Total Latency</th><th>Min Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Thread ID</th><th>Processlist ID</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(`user` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(min_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',IFNULL(thread_id,''),
+        '</td><td>',IFNULL(processlist_id,''),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$io_by_thread_by_latency
+        ORDER BY total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 2.2 IO Global by File by Bytes (sys.x$io_global_by_file_by_bytes)
+SELECT * FROM (
+    SELECT '<div id="io_2" class="sub-title">2.2 IO Global by File by Bytes</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_file_by_bytes` ORDER BY x$io_global_by_file_by_bytes.total DESC</pre><table><tr><th>File</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Write</th><th>Total</th><th>Write Pct</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(`file` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(count_read,0),
+        '</td><td>',sys.format_bytes(total_read),
+        '</td><td>',sys.format_bytes(avg_read),
+        '</td><td>',FORMAT(count_write,0),
+        '</td><td>',sys.format_bytes(total_written),
+        '</td><td>',sys.format_bytes(avg_write),
+        '</td><td>',sys.format_bytes(total),
+        '</td><td>',IFNULL(CONCAT(ROUND(write_pct,2),'%'),''),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$io_global_by_file_by_bytes
+        ORDER BY total DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 2.3 IO Global by File by Latency (sys.x$io_global_by_file_by_latency)
+SELECT * FROM (
+    SELECT '<div id="io_3" class="sub-title">2.3 IO Global by File by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_file_by_latency` ORDER BY x$io_global_by_file_by_latency.total_latency DESC</pre><table><tr><th>File</th><th>Total</th><th>Total Latency</th><th>Count Read</th><th>Read Latency</th><th>Count Write</th><th>Write Latency</th><th>Count Misc</th><th>Misc Latency</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(`file` USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',FORMAT(count_read,0),
+        '</td><td>',sys.format_time(read_latency),
+        '</td><td>',FORMAT(count_write,0),
+        '</td><td>',sys.format_time(write_latency),
+        '</td><td>',FORMAT(count_misc,0),
+        '</td><td>',sys.format_time(misc_latency),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$io_global_by_file_by_latency
+        ORDER BY total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 2.4 IO Global by Wait by Bytes (sys.x$io_global_by_wait_by_bytes)
+SELECT * FROM (
+    SELECT '<div id="io_4" class="sub-title">2.4 IO Global by Wait by Bytes</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_wait_by_bytes` ORDER BY x$io_global_by_wait_by_bytes.total_requested DESC</pre><table><tr><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Min Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Written</th><th>Total Requested</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(min_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',FORMAT(count_read,0),
+        '</td><td>',sys.format_bytes(total_read),
+        '</td><td>',sys.format_bytes(avg_read),
+        '</td><td>',FORMAT(count_write,0),
+        '</td><td>',sys.format_bytes(total_written),
+        '</td><td>',sys.format_bytes(avg_written),
+        '</td><td>',sys.format_bytes(total_requested),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$io_global_by_wait_by_bytes
+        ORDER BY total_requested DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+-- 2.5 IO Global by Wait by Latency (sys.x$io_global_by_wait_by_latency)
+SELECT * FROM (
+    SELECT '<div id="io_5" class="sub-title">2.5 IO Global by Wait by Latency</div><pre class="query-sql"># Query:\n#\tSELECT * FROM `sys`.`x$io_global_by_wait_by_latency` ORDER BY x$io_global_by_wait_by_latency.total_latency DESC</pre><table><tr><th>Event Name</th><th>Total</th><th>Total Latency</th><th>Avg Latency</th><th>Max Latency</th><th>Read Latency</th><th>Write Latency</th><th>Misc Latency</th><th>Count Read</th><th>Total Read</th><th>Avg Read</th><th>Count Write</th><th>Total Written</th><th>Avg Written</th></tr>'
+
+    UNION ALL
+
+    SELECT CONCAT(
+        '<tr><td>',IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
+        '</td><td>',FORMAT(total,0),
+        '</td><td>',sys.format_time(total_latency),
+        '</td><td>',sys.format_time(avg_latency),
+        '</td><td>',sys.format_time(max_latency),
+        '</td><td>',sys.format_time(read_latency),
+        '</td><td>',sys.format_time(write_latency),
+        '</td><td>',sys.format_time(misc_latency),
+        '</td><td>',FORMAT(count_read,0),
+        '</td><td>',sys.format_bytes(total_read),
+        '</td><td>',sys.format_bytes(avg_read),
+        '</td><td>',FORMAT(count_write,0),
+        '</td><td>',sys.format_bytes(total_written),
+        '</td><td>',sys.format_bytes(avg_written),
+        '</td></tr>'
+    )
+    FROM (
+        SELECT *
+        FROM sys.x$io_global_by_wait_by_latency
+        ORDER BY total_latency DESC
+    ) t1
+
+    UNION ALL
+    SELECT '</table>'
+) x;
+
+SELECT '</details></div>';
+
+-- 6. Main Section: System (Collapsible)
+SELECT '<div class="card"><details open id="section_system"><summary><h2 id="main_system">3. Instance Health</h2></summary>';
+    SELECT '<div id="health_info" class="sub-title">3.1 Basic Health Check</div><table><tr><th>Time</th><th>User</th><th>Port</th><th>Version</th></tr>' UNION ALL
     SELECT CONCAT('<tr><td>',NOW(),'</td><td>',USER(),'</td><td>',@@port,'</td><td>',VERSION(),'</td></tr>') UNION ALL
     SELECT '</table>';
 SELECT '</details></div>';
 
--- 6. Main Section: Storage (Collapsible)
-SELECT '<div class="card"><details open id="section_storage"><summary><h2 id="main_storage">3. Storage and Objects</h2></summary>';
-    SELECT '<div id="db_info" class="sub-title">3.1 Database Capacity</div><table><tr><th>Schema</th><th>Charset</th><th>Data(MB)</th></tr>' UNION ALL
+-- 7. Main Section: Storage (Collapsible)
+SELECT '<div class="card"><details open id="section_storage"><summary><h2 id="main_storage">4. Storage and Objects</h2></summary>';
+    SELECT '<div id="db_info" class="sub-title">4.1 Database Capacity</div><table><tr><th>Schema</th><th>Charset</th><th>Data(MB)</th></tr>' UNION ALL
     SELECT CONCAT('<tr><td>',IFNULL(CONVERT(SCHEMA_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),'</td><td>',IFNULL(CONVERT(DEFAULT_CHARACTER_SET_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),'</td><td>',DataMB,'</td></tr>') FROM (SELECT a.SCHEMA_NAME, a.DEFAULT_CHARACTER_SET_NAME, SUM(TRUNCATE(IFNULL(data_length,0)/1024/1024,2)) AS DataMB FROM INFORMATION_SCHEMA.SCHEMATA a LEFT JOIN information_schema.tables b ON a.SCHEMA_NAME=b.TABLE_SCHEMA WHERE a.SCHEMA_NAME NOT IN ("mysql","information_schema","sys","performance_schema") GROUP BY 1,2) t UNION ALL
     SELECT '</table>';
 SELECT '</details></div>';
@@ -795,167 +948,6 @@ SELECT '</table>'
 SELECT '</details></div>';
 
 
-
-
--- 8. IO Info
-SELECT '<div class="card"><details open id="sec_tables"><summary><h2 id="main_tables">8. IO Info</h2></summary>';
-
-
--- 8.1 IO by Thread by Latency
-SELECT * FROM (
-SELECT '<div class="sub-title">8.1 IO by Thread by Latency</div><table><tr><th>user</th><th>thread_id</th><th>processlist_id</th><th>total</th><th>total_seconds</th><th>min_ms</th><th>avg_ms</th><th>max_ms</th></tr>'
-UNION ALL
-SELECT CONCAT(
-'<tr><td>',IFNULL(CONVERT(user USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-'</td><td>',thread_id,
-'</td><td>',IFNULL(processlist_id,''),
-'</td><td>',total,
-'</td><td>',ROUND(total_latency/1000000000000,2),
-'</td><td>',ROUND(min_latency/1000000000,2),
-'</td><td>',ROUND(avg_latency/1000000000,2),
-'</td><td>',ROUND(max_latency/1000000000,2),
-'</td></tr>'
-)
-FROM (
-SELECT *
-FROM sys.x$io_by_thread_by_latency
-ORDER BY total_latency DESC
-) t
-UNION ALL
-SELECT '</table>'
-) x;
-
-
--- 8.2 IO Global by File by Bytes
-
-SELECT * FROM (
-    SELECT '<div class="sub-title">8.2 IO Global by File by Bytes</div><table><tr><th>file</th><th>count_read</th><th>total_read (MB)</th><th>avg_read (KB)</th><th>count_write</th><th>total_written (MB)</th><th>avg_write (KB)</th><th>total (MB)</th><th>write_pct</th></tr>'
-    
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>',IFNULL(CONVERT(file USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>',count_read,
-        '</td><td>',ROUND(total_read/1024/1024,2),
-        '</td><td>',ROUND(avg_read/1024,2),
-        '</td><td>',count_write,
-        '</td><td>',ROUND(total_written/1024/1024,2),
-        '</td><td>',ROUND(avg_write/1024,2),
-        '</td><td>',ROUND(total/1024/1024,2),
-        '</td><td>',write_pct,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT *
-        FROM sys.x$io_global_by_file_by_bytes
-        ORDER BY total DESC
-    ) t
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 8.3 IO Global by File by Latency
-
-SELECT * FROM (
-    SELECT '<div class="sub-title">8.3 IO Global by File by Latency</div><table><tr><th>file</th><th>total</th><th>total_latency (sec)</th><th>count_read</th><th>read_latency (sec)</th><th>count_write</th><th>write_latency (sec)</th><th>count_misc</th><th>misc_latency (sec)</th></tr>'
-
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>', file,
-        '</td><td>', total,
-        '</td><td>', ROUND(total_latency/1000000000,6),
-        '</td><td>', count_read,
-        '</td><td>', ROUND(read_latency/1000000000,6),
-        '</td><td>', count_write,
-        '</td><td>', ROUND(write_latency/1000000000,6),
-        '</td><td>', count_misc,
-        '</td><td>', ROUND(misc_latency/1000000000,6),
-        '</td></tr>'
-    )
-    FROM (
-        SELECT *
-        FROM sys.x$io_global_by_file_by_latency
-        ORDER BY total_latency DESC
-    ) t
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 8.4 IO Global by Wait by Bytes
-SELECT * FROM (
-    SELECT '<div class="sub-title">8.4 IO Global by Wait by Bytes</div><table><tr><th>event_name</th><th>total</th><th>total_latency (sec)</th><th>min_latency (sec)</th><th>avg_latency (sec)</th><th>max_latency (sec)</th><th>count_read</th><th>total_read</th><th>avg_read</th><th>count_write</th><th>total_written</th><th>avg_written</th><th>total_requested</th></tr>'
-    
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>', IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', total,
-        '</td><td>', ROUND(total_latency/1000000000,6),
-        '</td><td>', ROUND(min_latency/1000000000,6),
-        '</td><td>', ROUND(avg_latency/1000000000,6),
-        '</td><td>', ROUND(max_latency/1000000000,6),
-        '</td><td>', count_read,
-        '</td><td>', total_read,
-        '</td><td>', ROUND(avg_read,4),
-        '</td><td>', count_write,
-        '</td><td>', total_written,
-        '</td><td>', ROUND(avg_written,4),
-        '</td><td>', total_requested,
-        '</td></tr>'
-    )
-    FROM (
-        SELECT *
-        FROM sys.x$io_global_by_wait_by_bytes
-        ORDER BY total_requested DESC
-    ) t
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
--- 8.5 IO Global by Wait by Latency
-
-SELECT * FROM (
-    SELECT '<div class="sub-title">8.5 IO Global by Wait by Latency</div><table><tr><th>event_name</th><th>total</th><th>total_latency (sec)</th><th>avg_latency (sec)</th><th>max_latency (sec)</th><th>read_latency (sec)</th><th>write_latency (sec)</th><th>misc_latency (sec)</th><th>count_read</th><th>total_read</th><th>avg_read</th><th>count_write</th><th>total_written</th><th>avg_written</th></tr>'
-    
-    UNION ALL
-
-    SELECT CONCAT(
-        '<tr><td>', IFNULL(CONVERT(event_name USING utf8mb4) COLLATE utf8mb4_unicode_ci,''),
-        '</td><td>', total,
-        '</td><td>', ROUND(total_latency/1000000000,6),
-        '</td><td>', ROUND(avg_latency/1000000000,6),
-        '</td><td>', ROUND(max_latency/1000000000,6),
-        '</td><td>', ROUND(read_latency/1000000000,6),
-        '</td><td>', ROUND(write_latency/1000000000,6),
-        '</td><td>', ROUND(misc_latency/1000000000,6),
-        '</td><td>', count_read,
-        '</td><td>', total_read,
-        '</td><td>', ROUND(avg_read,4),
-        '</td><td>', count_write,
-        '</td><td>', total_written,
-        '</td><td>', ROUND(avg_written,4),
-        '</td></tr>'
-    )
-    FROM (
-        SELECT *
-        FROM sys.x$io_global_by_wait_by_latency
-        ORDER BY total_latency DESC
-    ) t
-
-    UNION ALL
-    SELECT '</table>'
-) x;
-
-
-
-SELECT '</details></div>';
 
 
 
